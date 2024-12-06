@@ -1,0 +1,19 @@
+{
+    "suppliers": [
+      { "id": 1, "name": "Supplier A", "email": "a@example.com", "phone": "123-456-7890", "address": "123 Main St" },
+      { "id": 2, "name": "Supplier B", "email": "b@example.com", "phone": "234-567-8901", "address": "456 Elm St" },
+      { "id": 3, "name": "Supplier C", "email": "c@example.com", "phone": "345-678-9012", "address": "789 Oak St" },
+      { "id": 4, "name": "Supplier D", "email": "d@example.com", "phone": "456-789-0123", "address": "101 Pine St" },
+      { "id": 5, "name": "Supplier E", "email": "e@example.com", "phone": "567-890-1234", "address": "202 Cedar St" },
+      { "id": 6, "name": "Supplier F", "email": "f@example.com", "phone": "678-901-2345", "address": "303 Maple St" },
+      { "id": 7, "name": "Supplier G", "email": "g@example.com", "phone": "789-012-3456", "address": "404 Birch St" },
+      { "id": 8, "name": "Supplier H", "email": "a@example.com", "phone": "123-456-7890", "address": "123 Main St" },
+      { "id": 9, "name": "Supplier I", "email": "b@example.com", "phone": "234-567-8901", "address": "456 Elm St" },
+      { "id": 10, "name": "Supplier L", "email": "c@example.com", "phone": "345-678-9012", "address": "789 Oak St" },
+      { "id": 11, "name": "Supplier M", "email": "d@example.com", "phone": "456-789-0123", "address": "101 Pine St" },
+      { "id": 12, "name": "Supplier N", "email": "e@example.com", "phone": "567-890-1234", "address": "202 Cedar St" },
+      { "id": 13, "name": "Supplier O", "email": "f@example.com", "phone": "678-901-2345", "address": "303 Maple St" },
+      { "id": 14, "name": "Supplier P", "email": "g@example.com", "phone": "789-012-3456", "address": "404 Birch St" }
+    ]
+  }
+  

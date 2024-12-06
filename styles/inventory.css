@@ -1,0 +1,366 @@
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7fa;
+}
+
+
+.container {
+    display: flex;
+    gap: 20px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    margin-left: 270px; /* Sidebar width + gap */
+}
+
+h1 {
+    font-size: 32px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 16px;
+    color: #7f8c8d;
+}
+
+.logo img {
+    height: 50px;
+    margin-right: 20px; 
+}
+
+/* Inventory Cards */
+.dashboard-cards {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.card {
+    width: 30%;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-icon {
+    font-size: 40px;
+    color: #3498db;
+    margin-bottom: 15px;
+}
+
+.card h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.card p {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.card small {
+    color: #95a5a6;
+    font-size: 14px;
+}
+
+.card:hover {
+    background-color: #f1f1f1;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover .card-icon {
+    color: #2980b9;
+}
+
+/* Inventory Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #2c3e50;
+    color: white;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+    background-color: #e1f5fe;
+}
+
+td {
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+th {
+    font-weight: bold;
+}
+
+/* Add New Inventory Button */
+.table-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+#addInventoryBtn {
+    padding: 10px 20px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#addInventoryBtn:hover {
+    background-color: #1a2738;
+}
+
+/* Pagination Controls */
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#prevPage, #nextPage {
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#prevPage:hover, #nextPage:hover {
+    background-color: #2980b9;
+}
+
+#currentPage {
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+/* Action buttons in table */
+#inventoryTable .editBtn, 
+#inventoryTable .deleteBtn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+#inventoryTable .editBtn:hover, 
+#inventoryTable .deleteBtn:hover {
+    text-decoration: underline;
+}
+
+#inventoryTable .deleteBtn {
+    color: #dc3545;
+}
+
+#inventoryTable .deleteBtn:hover {
+    color: #c82333;
+}
+
+/* Modal for Adding Inventory */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 40%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Inventory Form */
+.add-inventory-form {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 15px; /* More rounded corners */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two-column layout */
+    gap: 25px;
+    width: 80vw; /* Slightly smaller for modern look */
+    max-width: 1000px; /* Limit max width */
+    margin: 50px auto; /* Centered */
+    transition: box-shadow 0.3s ease; /* Smooth shadow transition */
+}
+
+.add-inventory-form:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); /* Elevated hover effect */
+}
+
+.add-inventory-form h2 {
+    font-size: 30px;
+    color: #34495e;
+    grid-column: span 2; /* Span full width */
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    font-size: 16px;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 15px;
+    font-size: 15px;
+    border-radius: 8px; /* Softer input corners */
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    color: #2c3e50;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #3498db;
+    background-color: #ffffff;
+    outline: none;
+}
+
+.form-group input[type="file"] {
+    padding: 0;
+}
+
+/* Two-column layout adjustments */
+.form-group:nth-child(odd) {
+    grid-column: 1; /* Left column */
+}
+
+.form-group:nth-child(even) {
+    grid-column: 2; /* Right column */
+}
+
+.form-group textarea {
+    resize: vertical;
+    height: 150px;
+    padding: 15px;
+}
+
+/* Modern Button Styles */
+.form-group button {
+    background-color: #3498db;
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    grid-column: span 2; /* Full width button */
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.form-group button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.form-group button:active {
+    transform: translateY(0); /* Button returns to original position on click */
+}
+
+/* Responsive Grid Adjustments for Mobile */
+@media (max-width: 768px) {
+    .add-inventory-form {
+        grid-template-columns: 1fr; /* Switch to one column layout */
+        width: 95%;
+        padding: 20px;
+    }
+
+    .add-inventory-form h2 {
+        font-size: 24px;
+    }
+
+    .form-group {
+        grid-column: span 1; /* Single column */
+    }
+
+/* Close button for modal */
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Responsive Styles for Modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 80%;
+        padding: 15px;
+    }
+
+    .add-inventory-form h2 {
+        font-size: 20px;
+    }
+}

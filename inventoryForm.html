@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Inventory</title>
+  <link rel="stylesheet" href="styles/sidebar.css">
+  <link rel="stylesheet" href="styles/topbar.css">
+  <link rel="stylesheet" href="styles/inventory.css">
+
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+        <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
+        <li><a href="budget.html"><i class="fas fa-money-bill"></i> Budget</a></li>
+        <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income & Costs</a></li>
+        <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
+        <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
+        <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment & Purchase</a></li>
+        <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
+      </ul>
+      <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header>
+        <div class="top-bar">
+          <div class="logo">
+            <img src="assets/logo.jpg" alt="Logo" style="height: 50px;">
+          </div>
+          <div class="search-bar">
+            <input type="text" placeholder="Type for search">
+          </div>
+          <div class="user-icons">
+            <span class="icon"><i class="fas fa-bell"></i></span>
+            <span class="icon"><i class="fas fa-comments"></i></span>
+            <a href="profile.html">
+              <span class="icon"><i class="fas fa-user-circle"></i></span>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <h1>Add New Inventory Item</h1>
+
+      <!-- Add Inventory Form -->
+      <form class="add-inventory-form" id="addInventoryForm">
+
+        <div class="form-group">
+          <label for="productName">Product Name</label>
+          <input type="text" id="productName" name="productName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="productCategory">Category</label>
+          <select id="productCategory" name="productCategory" required>
+            <option value="">Select Category</option>
+            <option value="electronics">Electronics</option>
+            <option value="furniture">Furniture</option>
+            <option value="clothing">Clothing</option>
+            <option value="food">Food</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="productQuantity">Quantity</label>
+          <input type="number" id="productQuantity" name="productQuantity" min="1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="productPrice">Price (per unit)</label>
+          <input type="number" id="productPrice" name="productPrice" min="0.01" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+          <label for="supplier">Supplier</label>
+          <input type="text" id="supplier" name="supplier" required>
+        </div>
+
+        <div class="form-group">
+          <label for="availability">Availability</label>
+          <div>
+            <label>
+              <input type="radio" name="availability" value="in-stock" required> In Stock
+            </label>
+            <label>
+              <input type="radio" name="availability" value="out-of-stock"> Out of Stock
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="restockDate">Restock Date (if out of stock)</label>
+          <input type="date" id="restockDate" name="restockDate">
+        </div>
+
+        <div class="form-group">
+          <label for="productDescription">Product Description</label>
+          <textarea id="productDescription" name="productDescription" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <button type="submit">Add Product</button>
+        </div>
+
+        <p class="error-message" id="formErrorMessage"></p>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById('addInventoryForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const productName = document.getElementById('productName').value;
+      const productCategory = document.getElementById('productCategory').value;
+      const productQuantity = document.getElementById('productQuantity').value;
+      const productPrice = document.getElementById('productPrice').value;
+      const supplier = document.getElementById('supplier').value;
+      const availability = document.querySelector('input[name="availability"]:checked').value;
+      const restockDate = document.getElementById('restockDate').value;
+      const productDescription = document.getElementById('productDescription').value;
+      const errorMessage = document.getElementById('formErrorMessage');
+
+      // Validate the form fields
+      if (productName && productCategory && productQuantity && productPrice && supplier && availability && productDescription) {
+        // Simulate form submission (you can replace this with actual form submission logic)
+        alert('Product added successfully!');
+
+        // Clear the form
+        document.getElementById('addInventoryForm').reset();
+      } else {
+        errorMessage.textContent = 'All fields are required.';
+      }
+    });
+  </script>
+</body>
+</html>

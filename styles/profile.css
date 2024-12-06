@@ -1,0 +1,157 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7fa;
+    height: 100vh;
+    display: flex;
+  }
+  
+  .container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+  
+ 
+  
+  /* Main Content Styling */
+  .main-content {
+    margin-left: 250px;
+    padding: 80px 20px 20px 20px; /* Adjusted for fixed top bar */
+    width: calc(100% - 250px); /* Full width minus sidebar width */
+    background-color: #f4f7fa;
+    overflow-y: auto;
+  }
+  
+  /* Profile Section Styling */
+  .profile-section {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+  }
+  
+  .profile-header h2 {
+    font-size: 28px;
+    margin-top: 0;
+  }
+  
+  .profile-header p {
+    font-size: 16px;
+    color: #777;
+  }
+  
+  .profile-data {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-data .data-item {
+    margin-bottom: 15px;
+  }
+  
+  .profile-data label {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .profile-data p {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .password-update {
+    margin-top: 30px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .password-update h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .password-update .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .password-update input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .password-update button {
+    width: 100%;
+    padding: 12px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .password-update button:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 200px;
+    }
+  
+    .main-content {
+      margin-left: 200px;
+      width: calc(100% - 200px);
+    }
+  
+    .top-bar {
+      left: 200px;
+    }
+  
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .profile-header h2 {
+      margin-top: 10px;
+    }
+  
+    .profile-img {
+      margin: 0;
+      margin-bottom: 10px;
+    }
+  
+    .search-bar {
+      width: 60%;
+    }
+  }
+  

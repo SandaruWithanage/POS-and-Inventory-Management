@@ -1,0 +1,49 @@
+{
+    "sales": {
+      "todaySales": 7500,
+      "percentChange": 85
+    },
+    "orders": {
+      "totalOrders": 1200,
+      "percentChange": 95
+    },
+    "users": {
+      "totalUsers": 200,
+      "percentChange": 70
+    },
+    "profile": {
+      "username": "rukshan2024",
+      "email": "rukshan2024@example.com",
+      "fullName": "Rukshan Perera",
+      "profilePicture": "assets/profile.jpg",
+      "phone": "+94 77 123 4567",
+      "role": "Administrator",
+      "createdOn": "2024-01-15"
+    },
+    "inventory": {
+      "itemsInStock": 500,
+      "lowStockItems": 25
+    },
+    "suppliers": {
+      "totalSuppliers": 35,
+      "newSuppliers": 5
+    },
+    "budget": {
+      "allocatedBudget": 100000,
+      "spentBudget": 45000
+    },
+    "incomeAndCosts": {
+      "totalIncome": 80000,
+      "totalCosts": 35000
+    },
+    "shipment": {
+      "totalShipments": 150,
+      "pendingShipments": 10
+    },
+    "roles": {
+      "adminCount": 5,
+      "managerCount": 10,
+      "staffCount": 50
+    }
+  }
+  

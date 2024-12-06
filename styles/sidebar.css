@@ -1,0 +1,93 @@
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #2c3e50;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Allows scrolling if content overflows */
+}
+
+
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    margin: 15px 0;
+}
+
+ul li a {
+    text-decoration: none;
+    color: #bdc3c7; /* Lighter text color */
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    transition: background 0.3s ease, color 0.3s ease;
+    border-radius: 8px;
+}
+
+ul li a:hover {
+    background-color: #3498db; /* Blue highlight on hover */
+    color: #ffffff; /* White text on hover */
+}
+
+ul li a i {
+    margin-right: 15px;
+    font-size: 20px;
+}
+
+ul li.active a {
+    background-color: #1abc9c; /* Active link styling */
+    color: #ffffff;
+}
+
+.logout-btn {
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: auto; /* Pushes logout button to the bottom */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+    flex-shrink: 0; /* Ensures it stays visible */
+    margin-bottom:50px
+}
+
+
+.logout-btn i {
+    margin-right: 10px;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Main Content Adjustment */
+.main-content {
+    margin-left: 250px; /* Ensures main content does not overlap the sidebar */
+    padding: 30px;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}

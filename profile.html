@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Profile</title>
+  <link rel="stylesheet" href="styles/profile.css">
+  <link rel="stylesheet" href="styles/sidebar.css">
+  <link rel="stylesheet" href="styles/topbar.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Container for sidebar, topbar and content -->
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+        <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
+        <li><a href="budget.html"><i class="fas fa-money-bill"></i> Budget</a></li>
+        <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income & Costs</a></li>
+        <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
+        <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
+        <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment & Purchase</a></li>
+        <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
+      </ul>
+      <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header>
+        <div class="top-bar">
+          <div class="logo">
+            <img src="assets/logo.jpg" alt="Logo" style="height: 50px;">
+          </div>
+          <div class="search-bar">
+            <input type="text" placeholder="Type for search">
+          </div>
+          <div class="user-icons">
+            <span class="icon"><i class="fas fa-bell"></i></span>
+            <span class="icon"><i class="fas fa-comments"></i></span>
+            <span class="icon"><i class="fas fa-user-circle"></i></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Profile Section -->
+      <section class="profile-section">
+        <div class="profile-box">
+          <!-- Profile Header -->
+          <div class="profile-header">
+            <img id="profile-picture" src="" alt="Profile Picture" class="profile-img">
+            <h2 id="full-name"></h2>
+            <p id="username"></p>
+          </div>
+
+          <!-- Profile Data -->
+          <div class="profile-data">
+            <div class="data-item">
+              <label>Email:</label>
+              <p id="email"></p>
+            </div>
+            <div class="data-item">
+              <label>Phone Number:</label>
+              <p id="phone"></p>
+            </div>
+            <div class="data-item">
+              <label>Role:</label>
+              <p id="role"></p>
+            </div>
+            <div class="data-item">
+              <label>Account Created On:</label>
+              <p id="created-on"></p>
+            </div>
+          </div>
+
+          <!-- Update Password Section -->
+          <div class="password-update">
+            <h3>Update Password</h3>
+            <form id="password-form">
+              <div class="input-group">
+                <label for="current-password">Current Password</label>
+                <input type="password" id="current-password" placeholder="Enter current password">
+              </div>
+              <div class="input-group">
+                <label for="new-password">New Password</label>
+                <input type="password" id="new-password" placeholder="Enter new password">
+              </div>
+              <button type="submit">Update Password</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Fetch profile data from data/data.json
+    fetch('data/data.json')
+      .then(response => response.json())
+      .then(data => {
+        // Set profile data dynamically
+        document.getElementById('profile-picture').src = data.profile.profilePicture;
+        document.getElementById('full-name').innerText = data.profile.fullName;
+        document.getElementById('username').innerText = `@${data.profile.username}`;
+        document.getElementById('email').innerText = data.profile.email;
+        document.getElementById('phone').innerText = data.profile.phone;
+        document.getElementById('role').innerText = data.profile.role;
+        document.getElementById('created-on').innerText = data.profile.createdOn;
+      })
+      .catch(error => {
+        console.error('Error fetching profile data:', error);
+      });
+
+    // Handle password update form submission
+    document.getElementById('password-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+
+      // Simulate password update process
+      alert(`Password updated successfully!\nCurrent Password: ${currentPassword}\nNew Password: ${newPassword}`);
+      
+      // Clear form fields
+      document.getElementById('current-password').value = '';
+      document.getElementById('new-password').value = '';
+    });
+  </script>
+</body>
+</html>
