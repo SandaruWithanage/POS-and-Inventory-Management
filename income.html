@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suppliers</title>
+  <title>Income & Costs</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/topbar.css">
   <link rel="stylesheet" href="styles/budget.css">
@@ -27,7 +27,7 @@
         <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment & Purchase</a></li>
         <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
-      <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <button class="logout-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
     </aside>
 
     <!-- Main Content -->
@@ -35,7 +35,6 @@
       <!-- Top Bar -->
       <header>
         <div class="top-bar">
-          <!-- Add logo image -->
           <div class="logo">
             <img src="assets/logo.jpg" alt="Logo" style="height: 50px;">
           </div>
@@ -45,7 +44,6 @@
           <div class="user-icons">
             <span class="icon"><i class="fas fa-bell"></i></span>
             <span class="icon"><i class="fas fa-comments"></i></span>
-            <!-- Wrap the user icon with a link to the profile page -->
             <a href="profile.html">
               <span class="icon"><i class="fas fa-user-circle"></i></span>
             </a>
@@ -54,7 +52,30 @@
       </header>
 
       <h1>Income & Costs</h1>
-      <p>Here you can manage the budget.</p>
+      <p>Here you can manage income and cost data.</p>
+
+      <!-- Income & Costs Table -->
+      <div class="table-container">
+        <table id="incomeCostsTable">
+          <thead>
+            <tr>
+              <th>Income ID</th>
+              <th>Income Rate</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamic income and cost data will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        <button id="prevPage">Previous</button>
+        <span id="currentPage">Page 1</span>
+        <button id="nextPage">Next</button>
+      </div>
     </main>
   </div>
   <script>
