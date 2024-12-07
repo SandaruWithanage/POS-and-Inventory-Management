@@ -20,13 +20,15 @@
         <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.html"><i class="fas fa-money-bill"></i> Budget</a></li>
-        <li><a href="costs.html">Costs</a></li>
+        <li><a href="costs.html"><i class="fas fa-money-check"></i> Costs</a></li>
         <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
         <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment & Purchase</a></li>
         <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="reports.html"><i class="fas fa-chart-pie"></i> Reports</a></li>
+        <li><a href="settings.html"><i class="fas fa-cogs"></i> Settings</a></li>
       </ul>
       <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
     </aside>
@@ -55,9 +57,7 @@
       <h1>Costs</h1>
 
       <div class="table-header">
-        <a href="costForm.html">
-          <button id="addCostBtn">Add New Cost</button>
-        </a>
+        <button id="addCostBtn">Add New Cost</button>
       </div>
       
       <!-- Costs Table -->
@@ -89,33 +89,6 @@
               <button class="delete-btn">Delete</button>
             </td>
           </tr>
-          <tr>
-            <td>COST003</td>
-            <td>15%</td>
-            <td>180,000.00</td>
-            <td>
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <td>COST004</td>
-            <td>10%</td>
-            <td>100,000.00</td>
-            <td>
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <td>COST005</td>
-            <td>25%</td>
-            <td>400,000.00</td>
-            <td>
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
         </tbody>
       </table>
 
@@ -128,6 +101,43 @@
     </main>
   </div>
 
-  <script src="scripts/supplier.js"></script> <!-- Reusing the JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const costTable = document.querySelector('#costTable tbody');
+      const addCostBtn = document.getElementById('addCostBtn');
+
+      let lastCostId = 2; // Tracks the last generated Cost ID (starts from existing entries)
+
+      // Inline Editing for Costs Table
+      costTable.addEventListener('click', (e) => {
+        if (e.target.classList.contains('edit-btn')) {
+          const row = e.target.closest('tr');
+          row.contentEditable = true; // Makes row editable
+          e.target.textContent = "Save"; // Change button to "Save"
+          e.target.classList.add('save-btn'); // Add save-btn class
+          e.target.classList.remove('edit-btn'); // Remove edit-btn class
+        } else if (e.target.classList.contains('save-btn')) {
+          const row = e.target.closest('tr');
+          row.contentEditable = false; // Stops editing
+          e.target.textContent = "Edit"; // Change button back to "Edit"
+          e.target.classList.add('edit-btn'); // Add edit-btn class
+          e.target.classList.remove('save-btn'); // Remove save-btn class
+        }
+      });
+
+      // Handle Delete Button
+      costTable.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+          const row = e.target.closest('tr');
+          row.remove();
+        }
+      });
+
+      // Redirect to Add Cost Form
+      addCostBtn.addEventListener('click', () => {
+        window.location.href = "costForm.html";
+      });
+    });
+  </script>
 </body>
 </html>
