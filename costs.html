@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/topbar.css">
   <link rel="stylesheet" href="styles/supplier.css">
+  <link rel="stylesheet" href="styles/costs.css"> <!-- New CSS file -->
 
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -19,7 +20,7 @@
         <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="budget.html"><i class="fas fa-money-bill"></i> Budget</a></li>
+        <li><a href="budget.html"><i class="fas fa-coins"></i>Budget</a></li>
         <li><a href="costs.html"><i class="fas fa-money-check"></i> Costs</a></li>
         <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
@@ -91,7 +92,11 @@
           </tr>
         </tbody>
       </table>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 56b6bad84e60b97456d4b59934430dd6b26f2ba7
       <!-- Pagination Controls -->
       <div class="pagination">
         <button id="prevPage">Previous</button>
@@ -101,43 +106,6 @@
     </main>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const costTable = document.querySelector('#costTable tbody');
-      const addCostBtn = document.getElementById('addCostBtn');
-
-      let lastCostId = 2; // Tracks the last generated Cost ID (starts from existing entries)
-
-      // Inline Editing for Costs Table
-      costTable.addEventListener('click', (e) => {
-        if (e.target.classList.contains('edit-btn')) {
-          const row = e.target.closest('tr');
-          row.contentEditable = true; // Makes row editable
-          e.target.textContent = "Save"; // Change button to "Save"
-          e.target.classList.add('save-btn'); // Add save-btn class
-          e.target.classList.remove('edit-btn'); // Remove edit-btn class
-        } else if (e.target.classList.contains('save-btn')) {
-          const row = e.target.closest('tr');
-          row.contentEditable = false; // Stops editing
-          e.target.textContent = "Edit"; // Change button back to "Edit"
-          e.target.classList.add('edit-btn'); // Add edit-btn class
-          e.target.classList.remove('save-btn'); // Remove save-btn class
-        }
-      });
-
-      // Handle Delete Button
-      costTable.addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-btn')) {
-          const row = e.target.closest('tr');
-          row.remove();
-        }
-      });
-
-      // Redirect to Add Cost Form
-      addCostBtn.addEventListener('click', () => {
-        window.location.href = "costForm.html";
-      });
-    });
-  </script>
+  <script src="scripts/costs.js"></script> <!-- New JS file -->
 </body>
 </html>
