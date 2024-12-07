@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Income & Costs</title>
+  <title>Income</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/topbar.css">
-  <link rel="stylesheet" href="styles/budget.css">
+  <link rel="stylesheet" href="styles/supplier.css">
 
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -20,14 +20,15 @@
         <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.html"><i class="fas fa-money-bill"></i> Budget</a></li>
-        <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income & Costs</a></li>
+        <li><a href="costs.html">Costs</i></a></li>
+        <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
         <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment & Purchase</a></li>
         <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
-      <button class="logout-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
     </aside>
 
     <!-- Main Content -->
@@ -36,10 +37,10 @@
       <header>
         <div class="top-bar">
           <div class="logo">
-            <img src="assets/logo.jpg" alt="Logo" style="height: 50px;">
+            <img src="assets/logo.jpg" alt="Logo">
           </div>
           <div class="search-bar">
-            <input type="text" placeholder="Type for search">
+            <input type="text" placeholder="Type for search" id="searchInput">
           </div>
           <div class="user-icons">
             <span class="icon"><i class="fas fa-bell"></i></span>
@@ -51,25 +52,72 @@
         </div>
       </header>
 
-<<<<<<< HEAD
-      <h1>Income & Costs</h1>
-      <p>Here you can manage income and cost data.</p>
+      <h1>Income</h1>
 
-      <!-- Income & Costs Table -->
-      <div class="table-container">
-        <table id="incomeCostsTable">
-          <thead>
-            <tr>
-              <th>Income ID</th>
-              <th>Income Rate</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Dynamic income and cost data will be inserted here -->
-          </tbody>
-        </table>
+      <div class="table-header">
+        <a href="incomeForm.html">
+          <button id="addIncomeBtn">Add New Income</button>
+        </a>
       </div>
+      
+      <!-- Income Table -->
+      <table id="incomeTable">
+        <thead>
+          <tr>
+            <th>Income ID</th>
+            <th>Income Rate (LKR)</th>
+            <th>Amount (LKR)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>INC001</td>
+            <td>12%</td>
+            <td>150,000.00</td>
+            <td>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>INC002</td>
+            <td>10%</td>
+            <td>200,000.00</td>
+            <td>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>INC003</td>
+            <td>8%</td>
+            <td>120,000.00</td>
+            <td>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>INC004</td>
+            <td>15%</td>
+            <td>300,000.00</td>
+            <td>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>INC005</td>
+            <td>5%</td>
+            <td>80,000.00</td>
+            <td>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <!-- Pagination Controls -->
       <div class="pagination">
@@ -79,26 +127,7 @@
       </div>
     </main>
   </div>
-  <script>
-    // JavaScript to handle logout redirection
-    document.getElementById('logout-btn').addEventListener('click', function() {
-      window.location.href = 'index.html'; // Redirect to index.html
-    });
-  </script>
+
+  <script src="scripts/supplier.js"></script> <!-- Reusing the JavaScript -->
 </body>
-=======
-        <h1>Income</h1>
-        <p>Here you can manage the Income.</p>
-      </main>
-    </div>
-    <script>
-      // JavaScript to handle logout redirection
-      document
-        .getElementById("logout-btn")
-        .addEventListener("click", function () {
-          window.location.href = "index.html"; // Redirect to index.html
-        });
-    </script>
-  </body>
->>>>>>> 7ff0608a51be5f64310ef0e02aa347f9b2b7e541
 </html>
