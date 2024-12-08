@@ -1,3 +1,43 @@
+<?php
+// Database connection
+$servername = "localhost";  // Replace with your database server
+$username = "root";         // Replace with your database username
+$password = "";             // Replace with your database password
+$dbname = "final_project";  // Replace with your database name
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+// Process form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // Get form data
+  $incomeRate = $_POST['incomeRate'];
+  $incomeAmount = $_POST['incomeAmount'];
+
+  // Validate the input
+  if (!empty($incomeRate) && !empty($incomeAmount)) {
+    // Prepare the SQL query
+    $sql = "INSERT INTO income (income_rate, income_amount) VALUES ('$incomeRate', '$incomeAmount')";
+
+    // Execute the query
+    if ($conn->query($sql) === TRUE) {
+      echo "New record created successfully";
+    } else {
+      echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+  } else {
+    echo "All fields are required.";
+  }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +96,7 @@
       <h1>Add New Income</h1>
 
       <!-- Add Income Form -->
-      <form class="add-income-form" id="addIncomeForm">
+      <form class="add-income-form" method="POST" >
         <div class="form-group">
           <label for="incomeRate">Income Rate (LKR)</label>
           <input type="number" id="incomeRate" name="incomeRate" required>
@@ -75,26 +115,5 @@
       </form>
     </main>
   </div>
-
-  <script>
-    document.getElementById('addIncomeForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const incomeRate = document.getElementById('incomeRate').value;
-      const incomeAmount = document.getElementById('incomeAmount').value;
-      const errorMessage = document.getElementById('formErrorMessage');
-
-      // Validate the form fields
-      if (incomeRate && incomeAmount) {
-        // Simulate form submission (you can replace this with actual form submission logic)
-        alert('Income added successfully!');
-
-        // Clear the form
-        document.getElementById('addIncomeForm').reset();
-      } else {
-        errorMessage.textContent = 'All fields are required.';
-      }
-    });
-  </script>
 </body>
 </html>

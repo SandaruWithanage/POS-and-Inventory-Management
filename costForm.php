@@ -1,3 +1,52 @@
+<?php
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "final_project"; // Change this to your actual database name
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check if the connection is successful
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get form data
+    $costCategory = $_POST['costCategory'];
+    $costDescription = $_POST['costDescription'];
+    $costAmount = $_POST['costAmount'];
+    $costDate = $_POST['costDate'];
+
+    // Validate the inputs (basic validation)
+    if (empty($costCategory) || empty($costDescription) || empty($costAmount) || empty($costDate)) {
+        echo "All fields are required.";
+    } else {
+        // Prepare and bind
+        $stmt = $conn->prepare("INSERT INTO costs (costCategory, costDescription, costAmount, costDate) VALUES (?, ?, ?, ?)");
+        if ($stmt === false) {
+            echo "Error preparing statement: " . $conn->error;
+        } else {
+            $stmt->bind_param("ssds", $costCategory, $costDescription, $costAmount, $costDate);
+
+            // Execute the query
+            if ($stmt->execute()) {
+                echo "<script>alert('Cost added successfully!'); window.location.href = 'costs.php';</script>";
+            } else {
+                echo "Error: " . $stmt->error;
+            }
+
+            // Close the statement
+            $stmt->close();
+        }
+    }
+}
+
+// Close the connection
+$conn->close();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,7 +103,7 @@
       <h1>Add New Cost</h1>
 
       <!-- Add Cost Form -->
-      <form class="add-cost-form" id="addCostForm">
+      <form class="add-cost-form" id="addCostForm" method="POST">
         <div class="form-group">
           <label for="costCategory">Category</label>
           <input type="text" id="costCategory" name="costCategory" placeholder="e.g., Utilities, Salaries" required>
@@ -84,27 +133,6 @@
     </main>
   </div>
 
-  <script>
-    document.getElementById('addCostForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const costCategory = document.getElementById('costCategory').value;
-      const costDescription = document.getElementById('costDescription').value;
-      const costAmount = document.getElementById('costAmount').value;
-      const costDate = document.getElementById('costDate').value;
-      const errorMessage = document.getElementById('formErrorMessage');
-
-      // Validate the form fields
-      if (costCategory && costDescription && costAmount && costDate) {
-        // Simulate form submission (you can replace this with actual submission logic)
-        alert('Cost added successfully!');
-        
-        // Clear the form
-        document.getElementById('addCostForm').reset();
-      } else {
-        errorMessage.textContent = 'All fields are required.';
-      }
-    });
-  </script>
+  
 </body>
 </html>

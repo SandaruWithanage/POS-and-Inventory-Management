@@ -1,236 +1,175 @@
-/* Global styles */
-body {
-    font-family: 'Roboto', sans-serif;
+/* Global Styles */
+* {
     margin: 0;
     padding: 0;
-    background-color: #f9fafb;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    height: 100vh;
-    color: #333;
-}
-
-/* Header section */
-header {
-    background-color: #004aad;
-    color: white;
-    text-align: center;
-    padding: 40px;
-    font-size: 36px;
-    font-weight: 600;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    letter-spacing: 1px;
-}
-
-/* Main content area */
-main {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 40px;
-    gap: 20px;
-    overflow-y: auto;
-}
-
-/* Input section */
-.input-section {
-    flex: 1 1 40%;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    transition: box-shadow 0.3s ease;
-}
-
-.input-section:hover {
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
-
-.input-section h3 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #333;
-    font-weight: 500;
-}
-
-.input-section input,
-.input-section select {
-    padding: 15px;
-    margin: 12px 0;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-    width: 100%;
     box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7fc;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Dashboard Container */
+.dashboard {
+    width: 100%;
+    max-width: 1400px; /* Increased width for a more spacious layout */
+    margin: 0 auto;
+    padding: 30px;
+}
+
+/* Header Styles */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-size: 3rem; /* Larger font for more emphasis */
+    color: #4a90e2;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Section Styles */
+section {
+    background-color: white;
+    padding: 25px; /* Increased padding for a cleaner look */
+    margin-bottom: 25px;
+    border-radius: 12px; /* Smoother border radius */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); /* Softer and wider shadow for depth */
+}
+
+/* Input and Button Styles */
+label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    color: #555;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 8px; /* More rounded corners */
+    margin-bottom: 18px;
+    font-size: 1rem;
     transition: border-color 0.3s ease;
 }
 
-.input-section input:focus,
-.input-section select:focus {
-    border-color: #004aad;
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: #4a90e2;
     outline: none;
 }
 
-/* Quantity button container */
-.quantity-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.quantity-container button {
-    padding: 10px;
-    font-size: 20px;
-    background-color: #004aad;
+button {
+    padding: 12px 20px;
+    background-color: #4a90e2;
     color: white;
     border: none;
-    border-radius: 50%;
+    border-radius: 6px;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 40px;
-    height: 40px;
+    font-weight: bold;
 }
 
-.quantity-container button:hover {
-    background-color: #003380;
+button:hover {
+    background-color: #357ab7;
 }
 
-.quantity-container input {
-    padding: 12px;
-    font-size: 18px;
-    width: 60px;
-    text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-}
-
-/* Cart section */
-.cart-section {
-    flex: 1 1 55%;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-}
-
-.cart-section h2 {
-    font-size: 26px;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #004aad;
-    font-weight: 500;
-}
-
+/* Cart Table Styles */
 #cart-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 #cart-table th,
 #cart-table td {
-    padding: 12px;
-    text-align: center;
-    font-size: 16px;
-    border-bottom: 1px solid #ddd;
+    padding: 15px;
+    text-align: left;
+    font-size: 1.1rem;
 }
 
 #cart-table th {
-    background-color: #f1f4f8;
-    font-weight: 500;
+    background-color: #f5f5f5;
 }
 
-/* Button styles */
-button,
-.payment-btn {
-    padding: 16px 26px;
-    font-size: 18px;
-    background-color: #004aad;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    width: 100%;
+#cart-table td {
+    background-color: #fff;
+    border-bottom: 1px solid #f1f1f1;
 }
 
-button:hover,
-.payment-btn:hover {
-    background-color: #003380;
-    transform: translateY(-2px);
-}
-
-/* Total section */
-.total-section {
-    margin-top: 20px;
-    text-align: right;
-    font-size: 20px;
-    color: #333;
-    font-weight: 500;
-}
-
-/* Payment section */
+/* Payment Section */
 #payment-section {
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    background-color: #fafafa;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+#payment-section.hidden {
+    display: none;
+}
+
+#payment-info {
     margin-top: 20px;
 }
 
-.payment-btn {
-    background-color: #28a745;
-    font-size: 16px;
-}
-
-.payment-btn:hover {
-    background-color: #218838;
-}
-
-/* Cash input field */
-#cash-input {
-    display: block;
+#payment-info input {
     width: 100%;
     padding: 12px;
-    font-size: 18px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    margin-top: 15px;
-    box-sizing: border-box;
+    margin-bottom: 18px;
+    border-radius: 8px;
 }
 
-/* Footer section */
-footer {
-    background-color: #004aad;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    font-size: 16px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+#payment-info p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #4a90e2;
 }
 
-/* Responsive Styles */
+/* Total Section */
+.total-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.total-section p {
+    font-weight: bold;
+}
+
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-    .input-section,
-    .cart-section {
-        flex: 1 1 100%;
+    .dashboard {
+        padding: 15px; /* Reduced padding for smaller screens */
     }
-    main {
-        padding: 20px;
+
+    section {
+        padding: 20px; /* Reduced padding for smaller screens */
     }
-    header {
-        font-size: 28px;
-        padding: 20px;
+
+    button {
+        padding: 10px 15px;
     }
-    button,
-    .payment-btn {
-        padding: 14px 24px;
-        font-size: 16px;
+
+    input[type="text"],
+    input[type="number"] {
+        padding: 10px;
+    }
+
+    .total-section {
+        font-size: 1.1rem;
     }
 }

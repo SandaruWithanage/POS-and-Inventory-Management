@@ -1,3 +1,48 @@
+<?php
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "final_project"; // Change this to your actual database name
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check if the connection is successful
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Check if form data is submitted using POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $supplierName = $_POST['supplierName'];
+    $supplierEmail = $_POST['supplierEmail'];
+    $supplierPhone = $_POST['supplierPhone'];
+    $productSupplied = $_POST['productSupplied'];
+
+    // Validate input
+    if (empty($supplierName) || empty($supplierEmail) || empty($supplierPhone) || empty($productSupplied)) {
+        echo "<p style='color:red;'>All fields are required!</p>";
+    } else {
+        // Prepare and bind SQL statement
+        $stmt = $conn->prepare("INSERT INTO suppliers (supplierName, supplierEmail, supplierPhone, productSupplied) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $supplierName, $supplierEmail, $supplierPhone, $productSupplied);
+
+        // Execute the query
+        if ($stmt->execute()) {
+            echo "<p style='color:green;'>New supplier added successfully!</p>";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+
+        // Close statement
+        $stmt->close();
+    }
+}
+
+// Close the connection
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,7 +103,7 @@
       <h1>Add New Supplier</h1>
 
       <!-- Add Supplier Form -->
-      <form class="add-supplier-form" id="addSupplierForm">
+      <form class="add-supplier-form" id="addSupplierForm" method="POST" >
 
         <div class="form-group">
           <label for="supplierName">Supplier Name</label>
@@ -89,27 +134,5 @@
     </main>
   </div>
 
-  <script>
-    document.getElementById('addSupplierForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const supplierName = document.getElementById('supplierName').value;
-      const supplierEmail = document.getElementById('supplierEmail').value;
-      const supplierPhone = document.getElementById('supplierPhone').value;
-      const productSupplied = document.getElementById('productSupplied').value;
-      const errorMessage = document.getElementById('formErrorMessage');
-
-      // Validate the form fields
-      if (supplierName && supplierEmail && supplierPhone && productSupplied) {
-        // Simulate form submission (you can replace this with actual form submission logic)
-        alert('Supplier added successfully!');
-        
-        // Clear the form
-        document.getElementById('addSupplierForm').reset();
-      } else {
-        errorMessage.textContent = 'All fields are required.';
-      }
-    });
-  </script>
 </body>
 </html>
