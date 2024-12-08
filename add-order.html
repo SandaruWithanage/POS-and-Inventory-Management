@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orders</title>
+  <title>Add New Order</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/topbar.css">
-  <link rel="stylesheet" href="styles/orders.css">
+  <link rel="stylesheet" href="styles/order-form.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -21,7 +21,7 @@
         <li><a href="costs.html"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
         <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="orders.html" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
         <li><a href="purches.html"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
@@ -51,37 +51,39 @@
         </div>
       </header>
 
-      <h1>Orders</h1>
+      <h1>Add New Order</h1>
 
-      <!-- Order List -->
-      <table class="order-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Order Name</th>
-            <th>Order Date</th>
-            <th>Order Status</th>
-            <th>Order Value</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>ORD2412011001</td>
-            <td>Order 1</td>
-            <td>2024-12-01</td>
-            <td>Processing</td>
-            <td>LKR 100,000</td>
-            <td>
-              <a href="edit-order.html"><button class="edit-btn">Edit</button></a>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
-          <!-- Add more orders as needed -->
-        </tbody>
-      </table>
+      <!-- Add Order Form -->
+      <form class="order-form" id="addOrderForm">
+        <div class="form-group">
+          <label for="orderName">Order Name</label>
+          <input type="text" id="orderName" name="orderName" required>
+        </div>
 
-      <a href="add-order.html"><button class="add-order-btn">Add New Order</button></a>
+        <div class="form-group">
+          <label for="orderDate">Order Date</label>
+          <input type="date" id="orderDate" name="orderDate" required>
+        </div>
+
+        <div class="form-group">
+          <label for="orderStatus">Order Status</label>
+          <select id="orderStatus" name="orderStatus" required>
+            <option value="processing">Processing</option>
+            <option value="completed">Completed</option>
+            <option value="shipped">Shipped</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="orderValue">Order Value</label>
+          <input type="number" id="orderValue" name="orderValue" required>
+        </div>
+
+        <div class="form-group">
+          <button type="submit">Add Order</button>
+        </div>
+      </form>
     </main>
   </div>
 </body>
