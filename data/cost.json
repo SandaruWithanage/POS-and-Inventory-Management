@@ -1,0 +1,47 @@
+{
+    "costs": [
+      {
+        "id": 1,
+        "category": "Utilities",
+        "description": "Electricity bill for office",
+        "amount": "120.50",
+        "date": "2023-11-15"
+      },
+      {
+        "id": 2,
+        "category": "Salaries",
+        "description": "November employee salaries",
+        "amount": "2500",
+        "date": "2023-11-30"
+      },
+      {
+        "id": 3,
+        "category": "Supplies",
+        "description": "Office supplies purchase",
+        "amount": "200.75",
+        "date": "2023-12-01"
+      },
+      {
+        "id": 4,
+        "category": "Maintenance",
+        "description": "Repair broken air conditioning",
+        "amount": "400",
+        "date": "2023-12-03"
+      },
+      {
+        "id": 5,
+        "category": "Transportation",
+        "description": "Delivery truck expenses",
+        "amount": "150.00",
+        "date": "2023-12-04"
+      },
+      {
+        "id": 6,
+        "category": "Marketing",
+        "description": "Advertising campaign expenses",
+        "amount": "800.00",
+        "date": "2023-12-07"
+      }
+    ]
+  }
+  

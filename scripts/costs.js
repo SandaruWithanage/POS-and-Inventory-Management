@@ -34,4 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = "costForm.html";
     });
   });
+  document.addEventListener("DOMContentLoaded", function () {
+    const editButtons = document.querySelectorAll('.edit-btn');
+  
+    editButtons.forEach((button) => {
+      button.addEventListener('click', function () {
+        const tableRow = this.closest('tr');
+        const costId = tableRow.querySelector('td:nth-child(1)').textContent.trim();
+        const costRate = tableRow.querySelector('td:nth-child(2)').textContent.trim();
+        const amount = tableRow.querySelector('td:nth-child(3)').textContent.trim();
+  
+        // Redirect to edit-cost.html with parameters
+        window.location.href = `edit-cost.html?id=${costId}&rate=${encodeURIComponent(costRate)}&amount=${encodeURIComponent(amount)}`;
+      });
+    });
+  });
   

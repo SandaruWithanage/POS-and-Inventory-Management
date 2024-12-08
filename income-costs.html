@@ -6,9 +6,7 @@
   <title>Income</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/topbar.css">
-  <link rel="stylesheet" href="styles/supplier.css">
-
-  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="styles/income.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -19,13 +17,13 @@
         <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="budget.html"><i class="fas fa-coins"></i>Budget</a></li>
+        <li><a href="budget.html"><i class="fas fa-coins"></i> Budget</a></li>
         <li><a href="costs.html"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
-        <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+        <li><a href="income.html"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
         <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment </a></li>
+        <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
         <li><a href="purches.html"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
@@ -56,7 +54,7 @@
       <h1>Income</h1>
 
       <div class="table-header">
-        <a href="incomeForm.html">
+        <a href="income-costsForm.html">
           <button id="addIncomeBtn">Add New Income</button>
         </a>
       </div>
@@ -66,57 +64,13 @@
         <thead>
           <tr>
             <th>Income ID</th>
-            <th>Income Rate (LKR)</th>
+            <th>Rate</th>
             <th>Amount (LKR)</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>INC001</td>
-            <td>12%</td>
-            <td>150,000.00</td>
-            <td>
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <td>INC002</td>
-            <td>10%</td>
-            <td>200,000.00</td>
-            <td>
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <td>INC003</td>
-            <td>8%</td>
-            <td>120,000.00</td>
-            <td>
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <td>INC004</td>
-            <td>15%</td>
-            <td>300,000.00</td>
-            <td>
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <td>INC005</td>
-            <td>5%</td>
-            <td>80,000.00</td>
-            <td>
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </td>
-          </tr>
+          <!-- Dynamically loaded content from JSON -->
         </tbody>
       </table>
 
@@ -129,6 +83,6 @@
     </main>
   </div>
 
-  <script src="scripts/supplier.js"></script> <!-- Reusing the JavaScript -->
+  <script src="scripts/income.js"></script> <!-- Link to your JS -->
 </body>
 </html>

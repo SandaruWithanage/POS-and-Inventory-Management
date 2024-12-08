@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suppliers</title>
+  <title>Income</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/topbar.css">
-  <link rel="stylesheet" href="styles/supplier.css">
+  <link rel="stylesheet" href="styles/income.css">
 
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -20,7 +20,7 @@
         <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="budget.html"><i class="fas fa-coins"></i>Budget</a></li>
+        <li><a href="budget.html"><i class="fas fa-coins"></i> Budget</a></li>
         <li><a href="costs.html"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
         <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income </a></li>
         <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
@@ -55,31 +55,28 @@
         </div>
       </header>
 
-      <h1>Suppliers</h1>
+      <h1>Income</h1>
 
-<div class="table-header">
-    <a href="suppliersForm.html">
-      <button id="addSupplierBtn">Add New Supplier</button>
-    </a>
-  </div>
-  
-      <!-- Suppliers Table -->
-      <table id="supplierTable">
+      <div class="table-header">
+        <a href="incomeForm.html">
+          <button id="addIncomeBtn">Add New Income</button>
+        </a>
+      </div>
+
+      <!-- Income Table -->
+      <table id="incomeTable">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>Actions</th> <!-- Added Actions column -->
+            <th>Income ID</th>
+            <th>Income Rate (LKR)</th>
+            <th>Amount (LKR)</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Dynamic supplier data will be inserted here -->
+          <!-- Dynamic income data will be inserted here -->
         </tbody>
       </table>
-      
 
       <!-- Pagination Controls -->
       <div class="pagination">
@@ -90,6 +87,6 @@
     </main>
   </div>
 
-  <script src="scripts/supplier.js"></script>
+  <script src="scripts/income.js"></script>
 </body>
 </html>
