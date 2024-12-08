@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipment Management</title>
+  <link rel="stylesheet" href="styles/sidebar.css">
+  <link rel="stylesheet" href="styles/topbar.css">
+  <link rel="stylesheet" href="styles/shipment.css">
+
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+        <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
+        <li><a href="budget.html"><i class="fas fa-coins"></i> Budget</a></li>
+        <li><a href="costs.html"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+        <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income </a></li>
+        <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
+        <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
+        <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment </a></li>
+        <li><a href="purches.html"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
+      </ul>
+      <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header>
+        <div class="top-bar">
+          <div class="logo">
+            <img src="assets/logo.jpg" alt="Logo" style="height: 50px;">
+          </div>
+          <div class="search-bar">
+            <input type="text" placeholder="Type for search">
+          </div>
+          <div class="user-icons">
+            <span class="icon"><i class="fas fa-bell"></i></span>
+            <span class="icon"><i class="fas fa-comments"></i></span>
+            <a href="profile.html">
+              <span class="icon"><i class="fas fa-user-circle"></i></span>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <h1>Add New Shipment</h1>
+
+      <!-- Add Shipment Form -->
+      <form class="add-shipment-form" id="addShipmentForm">
+        <div class="form-group">
+          <label for="shipmentId">Shipment ID</label>
+          <input type="text" id="shipmentId" name="shipmentId" required>
+        </div>
+
+        <div class="form-group">
+          <label for="destination">Destination</label>
+          <input type="text" id="destination" name="destination" required>
+        </div>
+
+        <div class="form-group">
+          <label for="shipmentDate">Shipment Date</label>
+          <input type="date" id="shipmentDate" name="shipmentDate" required>
+        </div>
+
+        <div class="form-group">
+          <label for="productDetails">Product Details</label>
+          <textarea id="productDetails" name="productDetails" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <button type="submit">Add Shipment</button>
+        </div>
+
+        <p class="error-message" id="formErrorMessage"></p>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById('addShipmentForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const shipmentId = document.getElementById('shipmentId').value;
+      const destination = document.getElementById('destination').value;
+      const shipmentDate = document.getElementById('shipmentDate').value;
+      const productDetails = document.getElementById('productDetails').value;
+      const errorMessage = document.getElementById('formErrorMessage');
+
+      // Validate the form fields
+      if (shipmentId && destination && shipmentDate && productDetails) {
+        // Simulate form submission (you can replace this with actual form submission logic)
+        alert('Shipment added successfully!');
+        
+        // Clear the form
+        document.getElementById('addShipmentForm').reset();
+      } else {
+        errorMessage.textContent = 'All fields are required.';
+      }
+    });
+  </script>
+</body>
+</html>
