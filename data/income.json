@@ -1,0 +1,52 @@
+{
+    "incomes": [
+      {
+        "id": 1,
+        "rate": "Hourly",
+        "amount": 500,
+        "description": "Freelance project payment"
+      },
+      {
+        "id": 2,
+        "rate": "Monthly",
+        "amount": 3000,
+        "description": "Salary"
+      },
+      {
+        "id": 3,
+        "rate": "Annual",
+        "amount": 12000,
+        "description": "Investment returns"
+      },
+      {
+        "id": 4,
+        "rate": "Project",
+        "amount": 2000,
+        "description": "Website development"
+      },
+      {
+        "id": 5,
+        "rate": "Weekly",
+        "amount": 700,
+        "description": "Consulting services"
+      },
+      {
+        "id": 6,
+        "rate": "Hourly",
+        "amount": 450,
+        "description": "Freelance writing"
+      },
+      {
+        "id": 7,
+        "rate": "Monthly",
+        "amount": 2500,
+        "description": "Part-time teaching"
+      },
+      {
+        "id": 8,
+        "rate": "Project",
+        "amount": 3500,
+        "description": "Mobile app development"
+      }
+    ]
+  }

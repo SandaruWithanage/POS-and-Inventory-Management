@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Income</title>
+  <link rel="stylesheet" href="styles/sidebar.css">
+  <link rel="stylesheet" href="styles/topbar.css">
+  <link rel="stylesheet" href="styles/supplier.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+        <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
+        <li><a href="budget.html"><i class="fas fa-coins"></i> Budget</a></li>
+        <li><a href="income.html"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+      </ul>
+      <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+    </aside>
+
+    <main class="main-content">
+      <header>
+        <div class="top-bar">
+          <div class="logo"><img src="assets/logo.jpg" alt="Logo"></div>
+        </div>
+      </header>
+      <h1>Add New Income</h1>
+      <form id="addIncomeForm">
+        <div class="form-group">
+          <label for="incomeRate">Income Rate (%)</label>
+          <input type="text" id="incomeRate" name="incomeRate" required>
+        </div>
+        <div class="form-group">
+          <label for="amount">Amount (LKR)</label>
+          <input type="text" id="amount" name="amount" required>
+        </div>
+        <div class="form-group">
+          <button type="submit">Add Income</button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="scripts/income.js"></script>
+</body>
+</html>

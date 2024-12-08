@@ -1,0 +1,145 @@
+/* General Resets */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Sidebar (for layout consistency with parent navigation) */
+  .sidebar {
+    background-color: #333;
+    color: white;
+    height: 100vh;
+    width: 250px;
+    padding: 1rem 0;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    margin: 10px 0;
+  }
+  
+  .sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: block;
+    transition: background-color 0.2s ease;
+  }
+  
+  .sidebar ul li a:hover {
+    background-color: #575757;
+  }
+  
+  /* Top Bar */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 250px; /* Keep it below the sidebar */
+    right: 0;
+    z-index: 100;
+  }
+  
+  .top-bar .logo img {
+    height: 40px;
+    width: auto;
+  }
+  
+  .top-bar .search-bar input[type="text"] {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  
+  .top-bar .search-bar input[type="text"]:focus {
+    border-color: #3498db;
+  }
+  
+  .top-bar .user-icons .icon {
+    margin-left: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .top-bar .user-icons .icon:hover {
+    color: #3498db;
+  }
+  
+  /* Main Content Section */
+  .main-content {
+    margin: 80px 20px 20px 270px; /* Adjust to fit the space for Sidebar & Top Bar */
+    padding: 1.5rem;
+    background: #f4f4f4;
+    border-radius: 4px;
+  }
+  
+  /* Form Styles */
+  form {
+    margin: 2rem 0;
+  }
+  
+  .form-group {
+    margin: 1rem 0;
+  }
+  
+  form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  form input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.2s ease;
+  }
+  
+  form input[type="text"]:focus {
+    border-color: #3498db;
+  }
+  
+  button[type="submit"] {
+    background: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  button[type="submit"]:hover {
+    background: #2980b9;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .sidebar,
+    .top-bar {
+      display: none;
+    }
+  
+    .main-content {
+      margin: 20px 0;
+    }
+  }
+  
