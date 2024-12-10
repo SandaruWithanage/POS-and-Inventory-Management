@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($stmt->execute()) {
         // Redirect to orders page after successful update
-        header("Location: order.php");
+        header("Location: orders.php");
         exit;
     } else {
         echo "Error: Could not update order";
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
         <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="order.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
         <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
