@@ -1,39 +1,43 @@
 <?php
 // Database connection
 $servername = "localhost";
-$username = "root";
-$password = "";
+$db_username = "root";
+$db_password = "";
 $dbname = "final_project"; // Change this to your actual database name
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $db_username, $db_password, $dbname);
 
 // Check if the connection is successful
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle delete action
-if (isset($_GET['delete_id'])) {
-    $budgetId = $_GET['delete_id'];
-    $deleteQuery = "DELETE FROM budget WHERE id = ?";
-    $stmt = $conn->prepare($deleteQuery);
-    $stmt->bind_param("i", $budgetId);
-    if ($stmt->execute()) {
-        echo "<script>alert('Budget deleted successfully'); window.location.href = 'budget.php';</script>";
+// Update logic
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $id = $_POST['role_id'];
+    $username = $_POST['username'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Hash password for security
+
+    // Validate input
+    if (empty($id) || empty($username) || empty($password)) {
+        echo "<p style='color:red;'>All fields are required!</p>";
     } else {
-        echo "Error deleting record: " . $stmt->error;
+        // Update the role in the database
+        $stmt = $conn->prepare("UPDATE roles SET username = ?, password = ? WHERE id = ?");
+        $stmt->bind_param("ssi", $username, $password, $id);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Role updated successfully!'); window.location.href = 'roles.php';</script>";
+        } else {
+            echo "<p style='color:red;'>Error: " . $stmt->error . "</p>";
+        }
+        $stmt->close();
     }
 }
 
-// Fetch budget data from the database
-$sql = "SELECT * FROM budget";
+// Fetch all roles
+$sql = "SELECT id, role_name, username FROM roles";
 $result = $conn->query($sql);
-
-// Check if query was successful
-if ($result === false) {
-    echo "Error: " . $conn->error;
-    exit;
-}
 
 // Close the connection
 $conn->close();
@@ -44,10 +48,11 @@ $conn->close();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Budget Data</title>
+  <title>Role Management</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/topbar.css">
-  <link rel="stylesheet" href="styles/budgets.css">
+  <link rel="stylesheet" href="styles/role.css">
+
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -82,7 +87,7 @@ $conn->close();
             <img src="assets/logo.jpg" alt="Logo">
           </div>
           <div class="search-bar">
-            <input type="text" placeholder="Search Budget Data" id="searchInput">
+            <input type="text" placeholder="Search roles" id="searchInput">
           </div>
           <div class="user-icons">
             <span class="icon"><i class="fas fa-bell"></i></span>
@@ -94,59 +99,51 @@ $conn->close();
         </div>
       </header>
 
-      <h1>Budget Data</h1>
+      <h1>Role Management</h1>
 
-      <div class="table-header">
-        <a href="budgetForm.php">
-          <button id="addBudgetBtn">Add New Budget Entry</button>
-        </a>
-      </div>
-
-      <!-- Budget Data Table -->
-      <table id="budgetTable">
+      <!-- Roles Table -->
+      <table id="rolesTable">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Start Date</th>
-            <th>Amount</th>
-            <th>Budget Rate</th>
-            <th>End Date</th>
-            <th>Created At</th>
-            <th>Actions</th>
+            <th>Role Name</th>
+            <th>Username</th>
           </tr>
         </thead>
         <tbody>
-          <?php
-          if ($result->num_rows > 0) {
-              while($row = $result->fetch_assoc()) {
-                  echo "<tr>";
-                  echo "<td>" . $row['id'] . "</td>";
-                  echo "<td>" . $row['start_date'] . "</td>";
-                  echo "<td>" . $row['amount'] . "</td>";
-                  echo "<td>" . $row['budget_rate'] . "</td>";
-                  echo "<td>" . $row['end_date'] . "</td>";
-                  echo "<td>" . $row['created_at'] . "</td>";
-                  echo "<td>
-                          <a href='edit_budget.php?id=" . $row['id'] . "'><i class='fas fa-edit'></i> </a> | 
-                          <a href='?delete_id=" . $row['id'] . "' onclick='return confirm(\"Are you sure you want to delete?\");'><i class='fas fa-trash-alt'></i> </a>
-                        </td>";
-                  echo "</tr>";
-              }
-          } else {
-              echo "<tr><td colspan='7'>No records found</td></tr>";
-          }
-          ?>
+          <?php if ($result->num_rows > 0): ?>
+              <?php while ($row = $result->fetch_assoc()): ?>
+                  <tr>
+                      <td><?php echo htmlspecialchars($row['id']); ?></td>
+                      <td><?php echo htmlspecialchars($row['role_name']); ?></td>
+                      <td><?php echo htmlspecialchars($row['username']); ?></td>
+                  </tr>
+              <?php endwhile; ?>
+          <?php else: ?>
+              <tr>
+                  <td colspan="3">No roles found.</td>
+              </tr>
+          <?php endif; ?>
         </tbody>
       </table>
 
-      <!-- Pagination Controls -->
-      <div class="pagination">
-        <button id="prevPage">Previous</button>
-        <span id="currentPage">Page 1</span>
-        <button id="nextPage">Next</button>
-      </div>
+      <h2>Update Role</h2>
+      <form method="POST">
+          <div class="form-group">
+              <label for="role_id">Role ID</label>
+              <input type="number" id="role_id" name="role_id" required>
+          </div>
+          <div class="form-group">
+              <label for="username">New Username</label>
+              <input type="text" id="username" name="username" required>
+          </div>
+          <div class="form-group">
+              <label for="password">New Password</label>
+              <input type="password" id="password" name="password" required>
+          </div>
+          <button id="updateRoleBtn" type="submit">Save Changes</button>
+      </form>
     </main>
   </div>
-
 </body>
 </html>
