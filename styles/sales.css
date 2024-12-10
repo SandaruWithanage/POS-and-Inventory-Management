@@ -1,0 +1,77 @@
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #2a2a2a; /* Dark gray background */
+    color: #ffffff; /* White text color for dark theme */
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    margin-left: 270px; /* Sidebar width + gap */
+    background-color: #2a2a2a; /* Matches body background */
+}
+
+h1 {
+    font-size: 32px;
+    color: #ffffff; /* White text for heading */
+    margin-bottom: 20px;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #1a1a1a; /* Darker background for table */
+    color: #ffffff; /* White text for dark table */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #004085; /* Deep navy blue header */
+    color: #ffffff; /* White text for header */
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #343a40; /* Subtle border for cells */
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #2d2d2d; /* Slightly lighter gray for even rows */
+}
+
+tbody tr:hover {
+    background-color: #004085; /* Deep navy blue for hover effect */
+}
+
+td {
+    color: #ffffff; /* White text */
+}
+
+/* Action Buttons */
+.edit-btn, .add-sale-btn {
+    padding: 10px 15px;
+    background-color: #0062cc; /* Button matches dark theme */
+    color: #ffffff; /* White text for buttons */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.edit-btn:hover, .add-sale-btn:hover {
+    background-color: #004085; /* Navy blue for hover effect */
+}
