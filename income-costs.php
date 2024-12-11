@@ -128,7 +128,7 @@ if (isset($_GET['delete_id'])) {
               <td><?php echo htmlspecialchars($record['income_amount']); ?></td>
               <td>
                 <!-- Edit Button with Font Awesome -->
-                <a href="edit_income-costs.php?id=<?php echo $record['id']; ?>" class="edit-btn"><i class="fas fa-edit"></i></a>
+                <a href="editIncome.php?id=<?php echo $record['id']; ?>" class="edit-btn"><i class="fas fa-edit"></i></a>
                 
                 <!-- Delete Button with Font Awesome -->
                 <a href="income-costs.php?delete_id=<?php echo urlencode($record['id']); ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this record?');"><i class="fas fa-trash-alt"></i></a>
