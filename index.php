@@ -52,6 +52,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 case "ProcurementManager":
                     header("Location: procurement_manager_dashboard.php");
                     break;
+                 case "InventoryManager":
+                     header("Location: inventory_manager_dashboard.html");
+                     break;
                 case "Cashier":
                     header("Location: CashierDashboard.php");
                     break;
