@@ -16,7 +16,7 @@ if ($conn->connect_error) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['role_id'];
     $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Hash password for security
+    $password = $_POST['password']; // Directly assign the password without hashing
 
     // Validate input
     if (empty($id) || empty($username) || empty($password)) {
