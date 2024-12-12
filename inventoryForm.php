@@ -26,18 +26,72 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sellingPrice = !empty($_POST['sellingPrice']) ? floatval($_POST['sellingPrice']) : 0.0;
     $stockStatus = trim($_POST['stockStatus']); // Get the stock status from the form
 
+    // Image upload handling
+    if (isset($_FILES['productImage']) && $_FILES['productImage']['error'] == 0) {
+        // Define allowed file types and size (2MB max)
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        $maxFileSize = 100 * 1024 * 1024; // 100MB
+
+        // Get file info
+        $imageTmpName = $_FILES['productImage']['tmp_name'];
+        $imageName = $_FILES['productImage']['name'];
+        $imageType = $_FILES['productImage']['type'];
+        $imageSize = $_FILES['productImage']['size'];
+
+        // Validate image file type and size
+        if (in_array($imageType, $allowedTypes) && $imageSize <= $maxFileSize) {
+            // Generate a unique name for the image file to avoid conflicts
+            $imagePath = 'uploads/' . uniqid() . '_' . basename($imageName);
+            $uploadDirectory = 'uploads/';
+
+            // Move uploaded file to the server directory
+            if (move_uploaded_file($imageTmpName, $uploadDirectory . basename($imagePath))) {
+                $imagePath = $uploadDirectory . basename($imagePath);
+            } else {
+                $message = "Error uploading the image.";
+            }
+        } else {
+            $message = "Invalid image file type or size.";
+        }
+    } else {
+        $imagePath = ''; // No image uploaded
+    }
+
     // Validate required fields
     if (!empty($productName) && !empty($barcodeNo) && !empty($productCategory) && $productQuantity >= 0 && $unitPrice > 0.0 && $sellingPrice > 0.0 && !empty($stockStatus)) {
-        
-        // Prepare SQL to insert data into the products table, including stock status and selling price
-        $sql = "INSERT INTO products (product_name, barcode_no, category, quantity, unit_price, selling_price, stock_status)
-                VALUES ('$productName', '$barcodeNo', '$productCategory', '$productQuantity', '$unitPrice', '$sellingPrice', '$stockStatus')";
+        // Calculate total value
+        $totalValue = $productQuantity * $unitPrice;
 
-        // Execute the SQL statement directly without using bind_param()
-        if ($conn->query($sql) === TRUE) {
-            $message = "New product added successfully!";
+        // Get current timestamp for created_at and updated_at
+        $currentTimestamp = date('Y-m-d H:i:s');
+
+        // Prepare SQL to insert data into the inventory table
+        $sql = "INSERT INTO inventory (product_name, barcode_no, category, quantity, unit_price, selling_price, total_value, stock_status, product_image, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt) {
+            $stmt->bind_param("sssiiddssss", $productName, $barcodeNo, $productCategory, $productQuantity, $unitPrice, $sellingPrice, $totalValue, $stockStatus, $imagePath, $currentTimestamp, $currentTimestamp);
+
+            // Execute the query and check for success
+            if ($stmt->execute()) {
+                $message = "New product added successfully!";
+                // Redirect back to inventory.php after success
+                header("Location: inventory.php");
+                exit(); // Make sure to exit after redirect
+            } else {
+                // Log the error for debugging and show a user-friendly message
+                error_log("Error executing query: " . $stmt->error);
+                $message = "Error executing query, please try again later.";
+            }
+
+            $stmt->close();
         } else {
-            $message = "Error: " . $conn->error;
+            // Log the error for debugging and show a user-friendly message
+            error_log("Error preparing statement: " . $conn->error);
+            $message = "Error preparing query, please try again later.";
         }
     } else {
         $message = "All fields are required.";
@@ -47,6 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // Close connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -63,18 +118,18 @@ $conn->close();
   <div class="container">
     <aside class="sidebar">
       <ul>
-        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-        <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
-        <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="budget.html"><i class="fas fa-coins"></i> Budget</a></li>
-        <li><a href="costs.html"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
-        <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income </a></li>
-        <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-        <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purches.html"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
-        <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
+        <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
+        <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
+        <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+        <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+        <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+        <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
+        <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
+        <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
     </aside>
@@ -101,12 +156,15 @@ $conn->close();
       <h1>Add New Inventory Item</h1>
 
       <!-- Add Inventory Form -->
-      <form class="add-inventory-form" id="addInventoryForm" action="" method="POST">
+      <form class="add-inventory-form" id="addInventoryForm" action="" method="POST" enctype="multipart/form-data">
         <div class="form-group">
           <label for="productName">Product Name</label>
           <input type="text" id="productName" name="productName" required>
         </div>
-
+        <div class="form-group">
+          <label for="productImage">Product Image</label>
+          <input type="file" id="productImage" name="productImage" accept="image/*" required>
+        </div>
         <div class="form-group">
           <label for="barcodeNo">Barcode No:</label>
           <input type="text" id="barcodeNo" name="barcodeNo" required>
@@ -150,24 +208,37 @@ $conn->close();
 
         <p class="error-message" id="formErrorMessage"><?php echo $message; ?></p>
       </form>
-
     </main>
   </div>
 
   <script>
-    document.getElementById('addInventoryForm').addEventListener('submit', function(event) {
-      const errorMessage = document.getElementById('formErrorMessage');
+document.getElementById('addInventoryForm').addEventListener('submit', function(event) {
+    const fileInput = document.getElementById('productImage');
+    const file = fileInput.files[0];
+    const errorMessage = document.getElementById('formErrorMessage');
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const maxFileSize = 100 * 1024 * 1024; // 100MB
 
-      if (!document.getElementById('productName').value ||
-          !document.getElementById('productCategory').value ||
-          !document.getElementById('productQuantity').value ||
-          !document.getElementById('unitPrice').value ||
-          !document.getElementById('sellingPrice').value ||
-          !document.getElementById('stockStatus').value) {
+    // Validate image file type and size
+    if (file && (!allowedTypes.includes(file.type) || file.size > maxFileSize)) {
+        errorMessage.textContent = 'Invalid image file type or size. Only JPEG, PNG, and GIF files under 100MB are allowed.';
+        event.preventDefault();
+        return; // Prevent form submission if there's an image error
+    }
+
+    // Validate required fields
+    if (!document.getElementById('productName').value ||
+        !document.getElementById('productCategory').value ||
+        !document.getElementById('productQuantity').value ||
+        !document.getElementById('unitPrice').value ||
+        !document.getElementById('sellingPrice').value ||
+        !document.getElementById('stockStatus').value) {
         errorMessage.textContent = 'All fields are required.';
         event.preventDefault();
-      }
-    });
-  </script>
+    }
+});
+</script>
+
+
 </body>
 </html>

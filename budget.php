@@ -12,6 +12,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Pagination setup
+$records_per_page = 10; // Number of records per page
+$page = isset($_GET['page']) ? $_GET['page'] : 1; // Get current page
+$offset = ($page - 1) * $records_per_page;
+
 // Handle delete action
 if (isset($_GET['delete_id'])) {
     $budgetId = $_GET['delete_id'];
@@ -25,9 +30,15 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-// Fetch budget data from the database
-$sql = "SELECT * FROM budget";
+// Fetch budget data with pagination
+$sql = "SELECT * FROM budget LIMIT $offset, $records_per_page";
 $result = $conn->query($sql);
+
+// Get the total number of records for pagination
+$total_records_query = "SELECT COUNT(*) FROM budget";
+$total_records_result = $conn->query($total_records_query);
+$total_records = $total_records_result->fetch_row()[0];
+$total_pages = ceil($total_records / $records_per_page);
 
 // Check if query was successful
 if ($result === false) {
@@ -56,21 +67,20 @@ $conn->close();
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-        <li><a href="suppliers.htphpml"><i class="fas fa-truck"></i> Suppliers</a></li>
+        <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
         <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
         <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
-        <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-        <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchase.html"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
-        <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+        <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
+        <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
+        <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
-      
     </aside>
 
     <!-- Main Content -->
@@ -127,7 +137,7 @@ $conn->close();
                   echo "<td>" . $row['end_date'] . "</td>";
                   echo "<td>" . $row['created_at'] . "</td>";
                   echo "<td>
-                          <a href='edit_budget.php?id=" . $row['id'] . "'><i class='fas fa-edit'></i> </a> | 
+                          <a href='edit-budget.php?id=" . $row['id'] . "'><i class='fas fa-edit'></i> </a> | 
                           <a href='?delete_id=" . $row['id'] . "' onclick='return confirm(\"Are you sure you want to delete?\");'><i class='fas fa-trash-alt'></i> </a>
                         </td>";
                   echo "</tr>";
@@ -141,9 +151,19 @@ $conn->close();
 
       <!-- Pagination Controls -->
       <div class="pagination">
-        <button id="prevPage">Previous</button>
-        <span id="currentPage">Page 1</span>
-        <button id="nextPage">Next</button>
+        <?php if ($page > 1): ?>
+          <button id="prevPage">
+            <a href="budget.php?page=<?php echo $page - 1; ?>">Previous</a>
+          </button>
+        <?php endif; ?>
+
+        <span id="currentPage">Page <?php echo $page; ?></span>
+
+        <?php if ($page < $total_pages): ?>
+          <button id="nextPage">
+            <a href="budget.php?page=<?php echo $page + 1; ?>">Next</a>
+          </button>
+        <?php endif; ?>
       </div>
     </main>
   </div>

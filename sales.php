@@ -93,8 +93,10 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>Sales ID</th>
             <th>Product Name</th>
             <th>Quantity</th>
+            <th>Unit Price (LKR)</th>
+            <th>Selling Price (LKR)</th>
+            <th>Total Amount (LKR)</th>
             <th>Sales Date</th>
-            <th>Total Amount</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -104,8 +106,10 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <td><?php echo htmlspecialchars($sale['id']); ?></td>
               <td><?php echo htmlspecialchars($sale['product_name']); ?></td>
               <td><?php echo htmlspecialchars($sale['quantity']); ?></td>
+              <td>LKR <?php echo htmlspecialchars(number_format($sale['unit_price'], 2)); ?></td>
+              <td>LKR <?php echo htmlspecialchars(number_format($sale['selling_price'], 2)); ?></td>
+              <td>LKR <?php echo htmlspecialchars(number_format($sale['quantity'] * $sale['selling_price'], 2)); ?></td>
               <td><?php echo htmlspecialchars($sale['sales_date']); ?></td>
-              <td>LKR <?php echo htmlspecialchars(number_format($sale['total_amount'], 2)); ?></td>
               <td>
                 <a href="edit-sale.php?id=<?php echo $sale['id']; ?>"><button class="edit-btn">Edit</button></a>
                 <a href="sales.php?delete_id=<?php echo $sale['id']; ?>" onclick="return confirm('Are you sure you want to delete this sale?');"><button class="delete-btn">Delete</button></a>

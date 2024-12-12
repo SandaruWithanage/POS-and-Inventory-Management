@@ -13,26 +13,22 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Set the number of items per page
-$itemsPerPage = 10;
-
-// Get current page and search term from the request
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-
-// Calculate the offset for the SQL query
+// Pagination setup
+$itemsPerPage = 10; // Number of items to display per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
+$search = isset($_GET['search']) ? $_GET['search'] : ''; // Search term
 $offset = ($page - 1) * $itemsPerPage;
 
 // Fetch inventory data
-$sql = "SELECT * FROM products WHERE product_name LIKE ? LIMIT $offset, $itemsPerPage";
+$sql = "SELECT * FROM inventory WHERE product_name LIKE ? LIMIT ?, ?";
 $stmt = $conn->prepare($sql);
 $searchTerm = "%" . $search . "%";
-$stmt->bind_param("s", $searchTerm);
+$stmt->bind_param("sii", $searchTerm, $offset, $itemsPerPage);
 $stmt->execute();
 $result = $stmt->get_result();
 
 // Fetch total number of records for pagination
-$totalSql = "SELECT COUNT(*) as total FROM products WHERE product_name LIKE ?";
+$totalSql = "SELECT COUNT(*) as total FROM inventory WHERE product_name LIKE ?";
 $totalStmt = $conn->prepare($totalSql);
 $totalStmt->bind_param("s", $searchTerm);
 $totalStmt->execute();
@@ -76,24 +72,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
 </head>
 <body>
     <div class="container">
+        <!-- Sidebar -->
         <aside class="sidebar">
             <ul>
-                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-                <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
-                <li><a href="budget.html"><i class="fas fa-coins"></i> Budget</a></li>
-                <li><a href="costs.html"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
-                <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
-                <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
-                <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-                <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
-                <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-                <li><a href="purches.html"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
-                <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
+            <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
+            <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
+            <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
+            <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+            <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+            <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+            <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+            <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
+            <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
+            <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+            <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
             </ul>
             <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
             <header>
                 <div class="top-bar">
@@ -121,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
                 </a>
             </div>
 
+            <!-- Inventory Table -->
             <table id="inventoryTable">
                 <thead>
                     <tr>
@@ -130,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
                         <th>Category</th>
                         <th>Quantity</th>
                         <th>Unit Price</th>
-                        <th>Selling Price</th> <!-- Added Selling Price column -->
+                        <th>Selling Price</th>
                         <th>Total Value</th>
                         <th>Actions</th>
                     </tr>
@@ -140,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
                 </tbody>
             </table>
 
+            <!-- Pagination Controls -->
             <div class="pagination">
                 <button id="prevPage">Previous</button>
                 <span id="currentPage">Page 1</span>
@@ -153,6 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
             let currentPage = 1;
             const itemsPerPage = 10;
 
+            // Function to fetch and display inventory data
             function fetchInventoryData(page = 1, search = '') {
                 fetch(`inventory.php?fetch_inventory=true&page=${page}&search=${search}`)
                     .then(response => response.json())
@@ -167,12 +168,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
                                 <td>${item.product_name}</td>
                                 <td>${item.barcode_no}</td>
                                 <td>${item.category}</td>
-                                <td>${item.quantity}</td>
-                                <td>${item.unit_price}</td>
-                                <td>${item.selling_price}</td> <!-- Display Selling Price -->
-                                <td>${(item.quantity * item.unit_price).toFixed(2)}</td>
+                                <td><input type="number" class="quantity" data-id="${item.id}" value="${item.quantity}" /></td>
+                                <td><input type="number" class="unit_price" data-id="${item.id}" value="${item.unit_price}" step="0.01" /></td>
+                                <td><input type="number" class="selling_price" data-id="${item.id}" value="${item.selling_price}" step="0.01" /></td>
+                                <td><input type="text" class="total_value" value="${(item.quantity * item.unit_price).toFixed(2)}" readonly /></td>
                                 <td>
-                                    <a href="edit_inventory.php?id=${item.id}">
+                                    <a href="edit-inventory.php?id=${item.id}">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     |
@@ -192,6 +193,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
                     .catch(error => console.error('Error fetching inventory data:', error));
             }
 
+            // Update total value when quantity, unit price, or selling price is changed
+            document.querySelector('#inventoryTable').addEventListener('input', function(e) {
+                const target = e.target;
+                if (target.classList.contains('quantity') || target.classList.contains('unit_price') || target.classList.contains('selling_price')) {
+                    const row = target.closest('tr');
+                    const quantity = row.querySelector('.quantity').value;
+                    const unitPrice = row.querySelector('.unit_price').value;
+                    const sellingPrice = row.querySelector('.selling_price').value;
+
+                    const totalValue = (quantity * unitPrice).toFixed(2);
+                    row.querySelector('.total_value').value = totalValue;
+                }
+            });
+
+            // Pagination Controls
             document.getElementById('nextPage').addEventListener('click', () => {
                 fetchInventoryData(currentPage + 1);
             });

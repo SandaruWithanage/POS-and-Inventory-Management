@@ -6,6 +6,7 @@ $password = "";      // Replace with your database password
 $dbname = "final_project";  // Replace with your actual database name
 
 try {
+    // Create PDO connection
     $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
@@ -13,24 +14,42 @@ try {
     exit;
 }
 
+// Pagination setup
+$records_per_page = 10; // Number of records per page
+$page = isset($_GET['page']) ? $_GET['page'] : 1; // Current page
+$offset = ($page - 1) * $records_per_page;
+
 // Delete cost functionality
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
 
+    // Prepare and execute the delete query
     $stmt = $pdo->prepare("DELETE FROM costs WHERE id = :id");
     $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
     $stmt->execute();
 
-    // Redirect after deletion
-    echo "<script>alert('Cost deleted successfully'); window.location.href = 'costs.php';</script>";
+    // Reassign IDs to ensure continuous numbering and reset AUTO_INCREMENT
+    $pdo->query("SET @i := 0");
+    $pdo->query("UPDATE costs SET id = @i := (@i + 1) ORDER BY id");
+    $pdo->query("ALTER TABLE costs AUTO_INCREMENT = 1");
+
+    // Redirect after deletion and ID update
+    header("Location: costs.php?page=" . $page);
     exit;
 }
 
-// Fetch costs from the database
-$stmt = $pdo->query("SELECT * FROM costs");
+// Fetch costs with pagination
+$stmt = $pdo->prepare("SELECT * FROM costs ORDER BY id LIMIT :offset, :records_per_page");
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindParam(':records_per_page', $records_per_page, PDO::PARAM_INT);
+$stmt->execute();
 $costs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
 
+// Get total records for pagination
+$stmt = $pdo->query("SELECT COUNT(*) FROM costs");
+$total_records = $stmt->fetchColumn();
+$total_pages = ceil($total_records / $records_per_page);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,7 +104,6 @@ $costs = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </header>
 
       <h1>Costs</h1>
-
       <a href="costForm.php"><button class="add-cost-btn">Add New Cost Entry</button></a>
 
       <!-- Cost Data Table -->
@@ -124,6 +142,21 @@ $costs = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <?php endif; ?>
         </tbody>
       </table>
+
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        <?php if ($page > 1): ?>
+          <button id="prevPage">
+            <a href="costs.php?page=<?php echo $page - 1; ?>">Previous</a>
+          </button>
+        <?php endif; ?>
+        <span id="currentPage">Page <?php echo $page; ?></span>
+        <?php if ($page < $total_pages): ?>
+          <button id="nextPage">
+            <a href="costs.php?page=<?php echo $page + 1; ?>">Next</a>
+          </button>
+        <?php endif; ?>
+      </div>
     </main>
   </div>
 </body>

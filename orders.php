@@ -13,6 +13,11 @@ try {
     exit;
 }
 
+// Pagination setup
+$records_per_page = 10; // Number of records to display per page
+$page = isset($_GET['page']) ? $_GET['page'] : 1; // Current page
+$offset = ($page - 1) * $records_per_page;
+
 // Delete order functionality
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
@@ -26,9 +31,17 @@ if (isset($_GET['delete_id'])) {
     exit;
 }
 
-// Fetch orders from the database
-$stmt = $pdo->query("SELECT * FROM orders");
+// Fetch orders from the database with pagination
+$stmt = $pdo->prepare("SELECT * FROM orders LIMIT :offset, :records_per_page");
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindParam(':records_per_page', $records_per_page, PDO::PARAM_INT);
+$stmt->execute();
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get total number of records for pagination
+$stmt = $pdo->query("SELECT COUNT(*) FROM orders");
+$total_records = $stmt->fetchColumn();
+$total_pages = ceil($total_records / $records_per_page);
 ?>
 
 <!DOCTYPE html>
@@ -114,6 +127,23 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <?php endforeach; ?>
         </tbody>
       </table>
+
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        <?php if ($page > 1): ?>
+          <button id="prevPage">
+            <a href="orders.php?page=<?php echo $page - 1; ?>">Previous</a>
+          </button>
+        <?php endif; ?>
+
+        <span id="currentPage">Page <?php echo $page; ?></span>
+
+        <?php if ($page < $total_pages): ?>
+          <button id="nextPage">
+            <a href="orders.php?page=<?php echo $page + 1; ?>">Next</a>
+          </button>
+        <?php endif; ?>
+      </div>
 
       <a href="add-order.php"><button class="add-order-btn">Add New Order</button></a>
     </main>
