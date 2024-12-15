@@ -1,6 +1,3 @@
-
-
-
 <?php
 // Database connection
 $host = "localhost";
@@ -72,11 +69,10 @@ $conn->close();
   <div class="container">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <ul>
-        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-        <li><a href="crm/inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-        <li><a href="crm/suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="crm/budget.php"><i class="fas fa-money-bill"></i> Budget</a></li>
+    <ul>
+        
+        <li><a href="finance/customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
+        
       </ul>
       <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
     </aside>

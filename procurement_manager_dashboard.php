@@ -1,6 +1,3 @@
-
-
-
 <?php
 // Database connection
 $host = "localhost";
@@ -40,33 +37,32 @@ $conn->close();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventory Manager Dashboard</title>
+  <title>Procurement Manager Dashboard</title>
   <link rel="stylesheet" href="styles/dashboard.css">
   <link rel="stylesheet" href="styles/topbar.css">
   <link rel="stylesheet" href="styles/sidebar.css">
 
   <style>
     .out-of-stock-table {
-    margin: 20px;
-    width: 100%;
-    border-collapse: collapse;
-  }
+      margin: 20px;
+      width: 100%;
+      border-collapse: collapse;
+    }
 
-  .out-of-stock-table th,
-  .out-of-stock-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-  }
+    .out-of-stock-table th,
+    .out-of-stock-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
 
-  .out-of-stock-table th {
-    background-color: #f4f4f4;
-  }
+    .out-of-stock-table th {
+      background-color: #f4f4f4;
+    }
   </style>
 
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 </head>
 <body>
   <div class="container">
@@ -74,7 +70,7 @@ $conn->close();
     <aside class="sidebar">
       <ul>
         
-        <li><a href="inventory/inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
+        <li><a href="inventory/orders.php" id="ordersMenuItem"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         
       </ul>
       <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>

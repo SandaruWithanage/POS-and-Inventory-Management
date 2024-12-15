@@ -73,16 +73,11 @@ $conn->close();
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-        <li><a href="finance/inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-        <li><a href="finance/suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
+      
         <li><a href="finance/budget.php"><i class="fas fa-money-bill"></i> Budget</a></li>
         <li><a href="finance/income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income & Costs</a></li>
-      <li><a href="finance/sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="finance/orders.php" id="ordersMenuItem"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-        <li><a href="finance/customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="finance/shipment.php"><i class="fas fa-shipping-fast"></i> Shipment & Purchase</a></li>
-        <li><a href="finance/roles.php" id="rolesMenuItem"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="finance/sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+        
       </ul>
       <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
     </aside>

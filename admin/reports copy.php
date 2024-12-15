@@ -1,3 +1,8 @@
+<?php
+// Start the session if needed
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,45 +12,45 @@
   <link rel="stylesheet" href="../styles/dashboard.css">
   <link rel="stylesheet" href="../styles/topbar.css">
   <link rel="stylesheet" href="../styles/sidebar.css">
-<style>
-/* Dashboard Cards Grid Style */
-.dashboard-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
-  gap: 20px; /* Spacing between cards */
-  margin: 20px;
-}
+  <style>
+  /* Dashboard Cards Grid Style */
+  .dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+    gap: 20px; /* Spacing between cards */
+    margin: 20px;
+  }
 
-.card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 50px;
-  text-align: center;
-  text-decoration: none;
-  color: inherit;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+  .card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
 
-.card:hover {
-  transform: translateY(-5px); /* Slight lift on hover */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
+  .card:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
 
-.card-icon {
-  font-size: 40px;
-  margin-bottom: 10px;
-  color: #4CAF50; /* Customize icon color */
-}
+  .card-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #4CAF50; /* Customize icon color */
+  }
 
-h3 {
-  font-size: 18px;
-  margin: 0;
-  color: #333;
-}
+  h3 {
+    font-size: 18px;
+    margin: 0;
+    color: #333;
+  }
 
-</style>
+  </style>
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -84,7 +89,7 @@ h3 {
             <span class="icon"><i class="fas fa-bell"></i></span>
             <span class="icon"><i class="fas fa-comments"></i></span>
             <!-- Wrap the user icon with a link to the profile page -->
-            <a href="profile.html">
+            <a href="profile.php">
               <span class="icon"><i class="fas fa-user-circle"></i></span>
             </a>
           </div>
@@ -104,30 +109,34 @@ h3 {
         </a>
         
         <!-- Repeat similar structure for other cards -->
-        <a href="salesReport.php" class="card">
+        <a href="productReport.php" class="card">
           <i class="fas fa-euro-sign card-icon"></i>
-          <h3>Sales Report</h3>
+          <h3>Product Report</h3>
         </a>
         
-        <a href="procurementReport.php" class="card">
+        <a href="revenueReport.php" class="card">
           <i class="fas fa-shopping-cart card-icon"></i>
-          <h3>Procurement Report</h3>
+          <h3>Revenue Report</h3>
         </a>
         
-        <a href="salesReport.php" class="card">
+        <a href="budgetReport.php" class="card">
           <i class="fas fa-euro-sign card-icon"></i>
-          <h3>Sales Report</h3>
+          <h3>Budget Report</h3>
         </a>
         
-        <a href="procurementReport.php" class="card">
+        <a href="financeReport.php" class="card">
           <i class="fas fa-shopping-cart card-icon"></i>
-          <h3>Procurement Report</h3>
+          <h3>Finance Report</h3>
+        </a>
+
+        <a href="suppliersReport.php" class="card">
+          <i class="fas fa-shopping-cart card-icon"></i>
+          <h3>Supplier Report</h3>
         </a>
       </section>
       
     </main>
   </div>
-
 
 </body>
 </html>

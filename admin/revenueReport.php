@@ -11,9 +11,8 @@ if ($conn->connect_error) {
     die('Connection failed: ' . $conn->connect_error);
 }
 
-// Fetch order data
-// Fetch order data
-$sql = "SELECT id, order_name, order_date, order_status, order_value FROM `orders` ORDER BY order_date DESC";
+// Fetch revenue data
+$sql = "SELECT id, sales_amount, cost_amount, income_amount, created_at FROM `income` ORDER BY created_at DESC";
 $result = $conn->query($sql);
 
 if ($result === false) {
@@ -21,14 +20,14 @@ if ($result === false) {
 }
 
 // Prepare data for bar chart and table
-$orderData = [];
+$revenueData = [];
 while ($row = $result->fetch_assoc()) {
-    $orderData[] = [
+    $revenueData[] = [
         'id' => $row['id'],
-        'order_name' => $row['order_name'],
-        'order_date' => $row['order_date'],
-        'order_status' => $row['order_status'],
-        'order_value' => $row['order_value']
+        'sales_amount' => $row['sales_amount'],
+        'cost_amount' => $row['cost_amount'],
+        'income_amount' => $row['income_amount'],
+        'created_at' => $row['created_at']
     ];
 }
 
@@ -40,53 +39,62 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>procument Report</title>
+    <title>Revenue Report</title>
     <link rel="stylesheet" href="../styles/sidebar.css">
-    <link rel="stylesheet" href="../styles/orderReport.css">
+    <link rel="stylesheet" href="../styles/revenueReport.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table {
+            margin: 0 auto;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
 <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
         <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
-        <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+        <li><a href="income-costs.php" class="active"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
         <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
-    </aside>
+</aside>
 
 <main class="content">
-    <h1>procument Report</h1>
+    <h1 style="text-align: center;">Revenue Report</h1>
 
-    <!-- Order Table -->
+    <!-- Revenue Table -->
     <table border="1" cellspacing="0" cellpadding="10">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Order Name</th>
-                <th>Order Date</th>
-                <th>Order Status</th>
-                <th>Order Value</th>
+                <th>Sales Amount</th>
+                <th>Cost Amount</th>
+                <th>Income Amount</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
         <?php
-        foreach ($orderData as $data) {
+        foreach ($revenueData as $data) {
             echo '<tr>';
             echo '<td>' . $data['id'] . '</td>';
-            echo '<td>' . htmlspecialchars($data['order_name']) . '</td>';
-            echo '<td>' . htmlspecialchars($data['order_date']) . '</td>';
-            echo '<td>' . htmlspecialchars($data['order_status']) . '</td>';
-            echo '<td>' . number_format($data['order_value'], 2) . '</td>';
+            echo '<td>' . number_format($data['sales_amount'], 2) . '</td>';
+            echo '<td>' . number_format($data['cost_amount'], 2) . '</td>';
+            echo '<td>' . number_format($data['income_amount'], 2) . '</td>';
+            echo '<td>' . htmlspecialchars($data['created_at']) . '</td>';
             echo '</tr>';
         }
         ?>
@@ -94,21 +102,37 @@ $conn->close();
     </table>
 
     <!-- Bar Chart -->
-    <canvas id="orderChart" width="800" height="400"></canvas>
+    <canvas id="revenueChart" width="800" height="400"></canvas>
     <script>
-        const orderData = <?php echo json_encode($orderData); ?>;
-        const labels = orderData.map(item => item.order_name);
-        const values = orderData.map(item => item.order_value);
+        const revenueData = <?php echo json_encode($revenueData); ?>;
+        const labels = revenueData.map(item => item.created_at);
+        const sales = revenueData.map(item => item.sales_amount);
+        const costs = revenueData.map(item => item.cost_amount);
+        const incomes = revenueData.map(item => item.income_amount);
 
-        const ctx = document.getElementById('orderChart').getContext('2d');
+        const ctx = document.getElementById('revenueChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Order Value',
-                        data: values,
+                        label: 'Sales Amount',
+                        data: sales,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Cost Amount',
+                        data: costs,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Income Amount',
+                        data: incomes,
                         backgroundColor: 'rgba(54, 162, 235, 0.6)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1

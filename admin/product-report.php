@@ -43,7 +43,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Report</title>
+    <title>Product Report</title>
   <link rel="stylesheet" href="../styles/sidebar.css">
     <link rel="stylesheet" href="../styles/inventoryReport.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -68,7 +68,7 @@ $conn->close();
     </aside>
 
     <main class="content">
-        <h1>Inventory Report</h1>
+        <h1>Product Report</h1>
 
         <!-- Inventory Table -->
         <table border="1" cellspacing="0" cellpadding="10">
