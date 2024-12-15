@@ -54,13 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-        <li><a href="SupplyManager/inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-        <li><a href="SupplyManager/suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="SupplyManager/budget.php"><i class="fas fa-money-bill"></i> Budget</a></li>
-      <li><a href="SupplyManager/sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="SupplyManager/orders.php" id="ordersMenuItem"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-        <li><a href="SupplyManager/shipment.php"><i class="fas fa-shipping-fast"></i> Shipment & Purchase</a></li>
+      <li><a href="../supply_manager_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
+        <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
+        <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
+        <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+        <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+        <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+       
       </ul>
       <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
     </aside>
