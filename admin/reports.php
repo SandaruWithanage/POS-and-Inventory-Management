@@ -124,9 +124,9 @@ session_start();
           <h3>Budget Report</h3>
         </a>
         
-        <a href="financeReport.php" class="card">
+        <a href="costsReport.php" class="card">
           <i class="fas fa-shopping-cart card-icon"></i>
-          <h3>Finance Report</h3>
+          <h3>Costs Report</h3>
         </a>
 
         <a href="suppliersReport.php" class="card">
