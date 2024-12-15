@@ -34,13 +34,13 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced POS System</title>
+    <title>Sarasavi Enterprices POS System</title>
     <link rel="stylesheet" href="./styles/cashier.css">
 </head>
 <body>
     <div class="dashboard">
         <header>
-            <h1>Advanced POS System</h1>
+            <h1>Sarasavi Enterprices POS System</h1>
         </header>
 
         <main>
