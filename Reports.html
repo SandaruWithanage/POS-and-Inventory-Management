@@ -7,7 +7,45 @@
   <link rel="stylesheet" href="styles/dashboard.css">
   <link rel="stylesheet" href="styles/topbar.css">
   <link rel="stylesheet" href="styles/sidebar.css">
+<style>
+/* Dashboard Cards Grid Style */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+  gap: 20px; /* Spacing between cards */
+  margin: 20px;
+}
 
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 50px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  color: #4CAF50; /* Customize icon color */
+}
+
+h3 {
+  font-size: 18px;
+  margin: 0;
+  color: #333;
+}
+
+</style>
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -53,48 +91,43 @@
       </header>
 
       <section class="dashboard-cards">
-        <div class="card">
+        <!-- Card for Sales Report -->
+        <a href="salesReport.php" class="card">
           <i class="fas fa-euro-sign card-icon"></i>
-          <h3>Today Sales</h3>
-          <p id="today-sales">0</p>
-          <small id="sales-percent">0%</small>
-        </div>
-        <div class="card">
+          <h3>Sales Report</h3>
+        </a>
+        
+        <!-- Card for Procurement Report -->
+        <a href="procurementReport.php" class="card">
           <i class="fas fa-shopping-cart card-icon"></i>
-          <h3>Orders</h3>
-          <p id="total-orders">1000</p>
-          <small id="orders-percent">0%</small>
-        </div>
-        <div class="card">
-          <i class="fas fa-users card-icon"></i>
-          <h3>Users</h3>
-          <p id="total-users">150</p>
-          <small id="users-percent">0%</small>
-        </div>
+          <h3>Procurement Report</h3>
+        </a>
+        
+        <!-- Repeat similar structure for other cards -->
+        <a href="salesReport.php" class="card">
+          <i class="fas fa-euro-sign card-icon"></i>
+          <h3>Sales Report</h3>
+        </a>
+        
+        <a href="procurementReport.php" class="card">
+          <i class="fas fa-shopping-cart card-icon"></i>
+          <h3>Procurement Report</h3>
+        </a>
+        
+        <a href="salesReport.php" class="card">
+          <i class="fas fa-euro-sign card-icon"></i>
+          <h3>Sales Report</h3>
+        </a>
+        
+        <a href="procurementReport.php" class="card">
+          <i class="fas fa-shopping-cart card-icon"></i>
+          <h3>Procurement Report</h3>
+        </a>
       </section>
+      
     </main>
   </div>
 
-  <script>
-    // Fetch data from the data.json file
-    fetch('data/data.json')
-      .then(response => response.json())
-      .then(data => {
-        // Update dashboard cards with data from the JSON file
-        document.getElementById('today-sales').textContent = data.sales.todaySales;
-        document.getElementById('sales-percent').textContent = data.sales.percentChange + '%';
-        
-        document.getElementById('total-orders').textContent = data.orders.totalOrders;
-        document.getElementById('orders-percent').textContent = data.orders.percentChange + '%';
-        
-        document.getElementById('total-users').textContent = data.users.totalUsers;
-        document.getElementById('users-percent').textContent = data.users.percentChange + '%';
-      })
-      .catch(error => console.error('Error fetching data:', error));
 
-      document.getElementById('logout-btn').addEventListener('click', function() {
-      window.location.href = 'index.html'; // Redirect to index.html
-    });
-  </script>
 </body>
 </html>
