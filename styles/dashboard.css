@@ -24,6 +24,12 @@ body {
     margin-top: 20px;
 }
 
+
+
+  .status-out {
+    color: red;
+    font-weight: bold;
+  }
 .card {
     width: 30%;
     background-color: #ffffff;
