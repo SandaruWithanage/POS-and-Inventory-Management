@@ -6,11 +6,11 @@ $password = "";
 $dbname = "final_project";
 
 // Create connection
-try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
 // Pagination setup
@@ -19,44 +19,37 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
 $search = isset($_GET['search']) ? $_GET['search'] : ''; // Search term
 $offset = ($page - 1) * $itemsPerPage;
 
-// Fetch inventory data with pagination
-$sql = "SELECT * FROM inventory WHERE product_name LIKE :searchTerm ORDER BY id ASC LIMIT :offset, :itemsPerPage";
+// Fetch inventory data
+$sql = "SELECT * FROM inventory WHERE product_name LIKE ? LIMIT ?, ?";
 $stmt = $conn->prepare($sql);
 $searchTerm = "%" . $search . "%";
-$stmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
-$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-$stmt->bindParam(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
+$stmt->bind_param("sii", $searchTerm, $offset, $itemsPerPage);
 $stmt->execute();
-$inventoryData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$result = $stmt->get_result();
 
 // Fetch total number of records for pagination
-$totalSql = "SELECT COUNT(*) as total FROM inventory WHERE product_name LIKE :searchTerm";
+$totalSql = "SELECT COUNT(*) as total FROM inventory WHERE product_name LIKE ?";
 $totalStmt = $conn->prepare($totalSql);
-$totalStmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
+$totalStmt->bind_param("s", $searchTerm);
 $totalStmt->execute();
-$totalRow = $totalStmt->fetch(PDO::FETCH_ASSOC);
+$totalResult = $totalStmt->get_result();
+$totalRow = $totalResult->fetch_assoc();
 $totalRecords = $totalRow['total'];
 
 // Calculate total pages
 $totalPages = ceil($totalRecords / $itemsPerPage);
 
-// Delete the item when requested
-if (isset($_GET['delete_id'])) {
-    $deleteId = (int)$_GET['delete_id'];
-    $deleteSql = "DELETE FROM inventory WHERE id = :id";
-    $deleteStmt = $conn->prepare($deleteSql);
-    $deleteStmt->bindParam(':id', $deleteId, PDO::PARAM_INT);
-    $deleteStmt->execute();
-    header("Location: inventory.php"); // Redirect to avoid resubmission on refresh
-    exit();
+$inventoryData = array();
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $inventoryData[] = $row;
+    }
 }
 
-// Renumber the inventory IDs after deletion
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
-    // Re-sequence inventory IDs after deletion
-    $reSequenceSql = "SET @rank := 0; UPDATE inventory SET id = (@rank := @rank + 1);";
-    $conn->query($reSequenceSql);
+$conn->close();
 
+// Handle if the request is for data fetching (AJAX)
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
     echo json_encode([
         'data' => $inventoryData,
         'currentPage' => $page,
@@ -64,8 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
     ]);
     exit();
 }
-
-$conn = null;
 ?>
 
 <!DOCTYPE html>
@@ -84,18 +75,18 @@ $conn = null;
         <!-- Sidebar -->
         <aside class="sidebar">
             <ul>
-                <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-                <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
-                <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
-                <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
-                <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
-                <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
-                <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-                <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
-                <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-                <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
-                <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
+            <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
+            <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
+            <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
+            <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+            <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+            <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+            <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+            <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
+            <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
+            <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+            <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
             </ul>
             <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
         </aside>
@@ -150,9 +141,9 @@ $conn = null;
 
             <!-- Pagination Controls -->
             <div class="pagination">
-                <button id="prevPage" style="display: none;">Previous</button>
+                <button id="prevPage">Previous</button>
                 <span id="currentPage">Page 1</span>
-                <button id="nextPage" style="display: none;">Next</button>
+                <button id="nextPage">Next</button>
             </div>
         </main>
     </div>
@@ -172,21 +163,21 @@ $conn = null;
                         
                         data.data.forEach(item => {
                             const row = document.createElement('tr');
-                            row.innerHTML = ` 
+                            row.innerHTML = `
                                 <td>${item.id}</td>
                                 <td>${item.product_name}</td>
                                 <td>${item.barcode_no}</td>
                                 <td>${item.category}</td>
-                                <td>${item.quantity}</td>
-                                <td>${item.unit_price}</td>
-                                <td>${item.selling_price}</td>
-                                <td>${(item.quantity * item.selling_price).toFixed(2)}</td>
+                                <td><input type="number" class="quantity" data-id="${item.id}" value="${item.quantity}" /></td>
+                                <td><input type="number" class="unit_price" data-id="${item.id}" value="${item.unit_price}" step="0.01" /></td>
+                                <td><input type="number" class="selling_price" data-id="${item.id}" value="${item.selling_price}" step="0.01" /></td>
+                                <td><input type="text" class="total_value" value="${(item.quantity * item.unit_price).toFixed(2)}" readonly /></td>
                                 <td>
                                     <a href="edit-inventory.php?id=${item.id}">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     |
-                                    <a href="inventory.php?delete_id=${item.id}">
+                                    <a href="delete_inventory.php?id=${item.id}">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                 </td>
@@ -195,24 +186,26 @@ $conn = null;
                         });
 
                         document.getElementById('currentPage').textContent = `Page ${data.currentPage}`;
-                        
-                        // Show/Hide Pagination Buttons
-                        if (data.currentPage > 1) {
-                            document.getElementById('prevPage').style.display = 'inline-block';
-                        } else {
-                            document.getElementById('prevPage').style.display = 'none';
-                        }
-
-                        if (data.currentPage < data.totalPages) {
-                            document.getElementById('nextPage').style.display = 'inline-block';
-                        } else {
-                            document.getElementById('nextPage').style.display = 'none';
-                        }
-
+                        document.getElementById('prevPage').disabled = data.currentPage <= 1;
+                        document.getElementById('nextPage').disabled = data.currentPage >= data.totalPages;
                         currentPage = data.currentPage;
                     })
                     .catch(error => console.error('Error fetching inventory data:', error));
             }
+
+            // Update total value when quantity, unit price, or selling price is changed
+            document.querySelector('#inventoryTable').addEventListener('input', function(e) {
+                const target = e.target;
+                if (target.classList.contains('quantity') || target.classList.contains('unit_price') || target.classList.contains('selling_price')) {
+                    const row = target.closest('tr');
+                    const quantity = row.querySelector('.quantity').value;
+                    const unitPrice = row.querySelector('.unit_price').value;
+                    const sellingPrice = row.querySelector('.selling_price').value;
+
+                    const totalValue = (quantity * unitPrice).toFixed(2);
+                    row.querySelector('.total_value').value = totalValue;
+                }
+            });
 
             // Pagination Controls
             document.getElementById('nextPage').addEventListener('click', () => {

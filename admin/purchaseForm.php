@@ -16,26 +16,23 @@ try {
 // Handle form submission and insert data
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Get form data (make sure to sanitize inputs as needed)
-    $order_id = $_POST['order_id'];
-    $order_type = $_POST['order_type'];
+    $order_name = $_POST['order_name'];
     $order_date = $_POST['order_date'];
+    $order_status = $_POST['order_status'];
+    $order_value = $_POST['order_value'];
 
     // Prepare SQL query (using correct table name 'purchase')
-    $stmt = $pdo->prepare("INSERT INTO purchase (order_id, order_type, order_date) VALUES (:order_id, :order_type, :order_date)");
-
-    // Check if the preparation was successful
-    if ($stmt === false) {
-        die("Error preparing the query: " . implode(" ", $pdo->errorInfo()));
-    }
+    $stmt = $pdo->prepare("INSERT INTO purchase (order_name, order_date, order_status, order_value) 
+                           VALUES (:order_name, :order_date, :order_status, :order_value)");
 
     // Bind parameters
-    $stmt->bindParam(':order_id', $order_id);
-    $stmt->bindParam(':order_type', $order_type);
+    $stmt->bindParam(':order_name', $order_name);
     $stmt->bindParam(':order_date', $order_date);
+    $stmt->bindParam(':order_status', $order_status);
+    $stmt->bindParam(':order_value', $order_value);
 
     // Execute the query
     if ($stmt->execute()) {
-        echo "Purchase added successfully!";
         header("Location: purches.php"); // Redirect after successful insertion
         exit;
     } else {
@@ -60,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
@@ -70,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purches.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
@@ -101,16 +98,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       <form action="purchaseForm.php" method="POST">
         <div class="form-group">
-          <label for="order_id">Order ID:</label>
-          <input type="text" id="order_id" name="order_id" required>
-        </div>
-        <div class="form-group">
-          <label for="order_type">Order Type:</label>
-          <input type="text" id="order_type" name="order_type" required>
+          <label for="order_name">Order Name:</label>
+          <input type="text" id="order_name" name="order_name" required>
         </div>
         <div class="form-group">
           <label for="order_date">Order Date:</label>
           <input type="date" id="order_date" name="order_date" required>
+        </div>
+        <div class="form-group">
+          <label for="order_status">Order Status:</label>
+          <input type="text" id="order_status" name="order_status" required>
+        </div>
+        <div class="form-group">
+          <label for="order_value">Order Value:</label>
+          <input type="number" id="order_value" name="order_value" required>
         </div>
         <button type="submit" class="submit-btn">Add Purchase</button>
       </form>

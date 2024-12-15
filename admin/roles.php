@@ -12,27 +12,21 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Update logic
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST['role_id'];
-    $username = $_POST['username'];
-    $password = $_POST['password']; // Directly assign the password without hashing
-
-    // Validate input
-    if (empty($id) || empty($username) || empty($password)) {
-        echo "<p style='color:red;'>All fields are required!</p>";
+// Delete logic
+if (isset($_GET['delete_id'])) {
+    $deleteId = $_GET['delete_id'];
+    $deleteQuery = "DELETE FROM roles WHERE id = ?";
+    $stmt = $conn->prepare($deleteQuery);
+    $stmt->bind_param("i", $deleteId);
+    if ($stmt->execute()) {
+        // Reorder IDs after deletion
+        $reorderQuery = "SET @id := 0; UPDATE roles SET id = (@id := @id + 1)";
+        $conn->query($reorderQuery);
+        echo "<script>alert('Role deleted and IDs reordered successfully!'); window.location.href = 'roles.php';</script>";
     } else {
-        // Update the role in the database
-        $stmt = $conn->prepare("UPDATE roles SET username = ?, password = ? WHERE id = ?");
-        $stmt->bind_param("ssi", $username, $password, $id);
-
-        if ($stmt->execute()) {
-            echo "<script>alert('Role updated successfully!'); window.location.href = 'roles.php';</script>";
-        } else {
-            echo "<p style='color:red;'>Error: " . $stmt->error . "</p>";
-        }
-        $stmt->close();
+        echo "<p style='color:red;'>Error: " . $stmt->error . "</p>";
     }
+    $stmt->close();
 }
 
 // Fetch all roles
@@ -50,7 +44,7 @@ $conn->close();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Role Management</title>
   <link rel="stylesheet" href="../styles/sidebar.css">
-  <link rel="stylesheet" href="..//topbar.css">
+  <link rel="stylesheet" href="../styles/topbar.css">
   <link rel="stylesheet" href="../styles/role.css">
 
   <!-- Font Awesome for Icons -->
@@ -61,7 +55,7 @@ $conn->close();
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
@@ -71,11 +65,10 @@ $conn->close();
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
-        <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="purches.php"><i class="fas fa-money-bill-wave"></i> Purchases</a></li>
+        <li><a href="roles.php" class="active"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
-      
     </aside>
 
     <!-- Main Content -->
@@ -108,6 +101,7 @@ $conn->close();
             <th>ID</th>
             <th>Role Name</th>
             <th>Username</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -117,11 +111,15 @@ $conn->close();
                       <td><?php echo htmlspecialchars($row['id']); ?></td>
                       <td><?php echo htmlspecialchars($row['role_name']); ?></td>
                       <td><?php echo htmlspecialchars($row['username']); ?></td>
+                      <td>
+                          <a href="edit_role.php?id=<?php echo $row['id']; ?>"><i class="fas fa-edit"></i> Edit</a> | 
+                          <a href="?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this role?');"><i class="fas fa-trash-alt"></i> Delete</a>
+                      </td>
                   </tr>
               <?php endwhile; ?>
           <?php else: ?>
               <tr>
-                  <td colspan="3">No roles found.</td>
+                  <td colspan="4">No roles found.</td>
               </tr>
           <?php endif; ?>
         </tbody>

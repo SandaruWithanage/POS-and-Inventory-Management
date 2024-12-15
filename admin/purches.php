@@ -25,8 +25,20 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-// Fetch purchase data from the database
-$sql = "SELECT * FROM purchase";
+// Pagination setup
+$limit = 10; // Number of records per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Fetch total number of records
+$sqlTotal = "SELECT COUNT(*) AS total FROM purchase";
+$resultTotal = $conn->query($sqlTotal);
+$rowTotal = $resultTotal->fetch_assoc();
+$totalRecords = $rowTotal['total'];
+$totalPages = ceil($totalRecords / $limit);
+
+// Fetch purchase data for the current page
+$sql = "SELECT id, order_name, order_date, order_status, order_value FROM purchase LIMIT $limit OFFSET $offset";
 $result = $conn->query($sql);
 
 // Check if query was successful
@@ -56,7 +68,7 @@ $conn->close();
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
@@ -66,7 +78,7 @@ $conn->close();
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="purchase.php" class="active"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
@@ -124,8 +136,8 @@ $conn->close();
                   echo "<td>" . $row['order_status'] . "</td>";
                   echo "<td>" . $row['order_value'] . "</td>";
                   echo "<td>
-                          <a href='edit_purchase.php?id=" . $row['id'] . "'><i class='fas fa-edit'></i> </a> | 
-                          <a href='?delete_id=" . $row['id'] . "' onclick='return confirm(\"Are you sure you want to delete?\");'><i class='fas fa-trash-alt'></i> </a>
+                          <a href='edit_purchase.php?id=" . $row['id'] . "'><i class='fas fa-edit'></i> Edit</a> | 
+                          <a href='?delete_id=" . $row['id'] . "' onclick='return confirm(\"Are you sure you want to delete?\");'><i class='fas fa-trash-alt'></i> Delete</a>
                         </td>";
                   echo "</tr>";
               }
@@ -138,12 +150,17 @@ $conn->close();
 
       <!-- Pagination Controls -->
       <div class="pagination">
-        <button id="prevPage">Previous</button>
-        <span id="currentPage">Page 1</span>
-        <button id="nextPage">Next</button>
+        <?php if ($page > 1): ?>
+          <a href="?page=<?php echo $page - 1; ?>"><button id="prevPage">Previous</button></a>
+        <?php endif; ?>
+        
+        <span id="currentPage">Page <?php echo $page; ?> of <?php echo $totalPages; ?></span>
+        
+        <?php if ($page < $totalPages): ?>
+          <a href="?page=<?php echo $page + 1; ?>"><button id="nextPage">Next</button></a>
+        <?php endif; ?>
       </div>
     </main>
   </div>
-
 </body>
 </html>

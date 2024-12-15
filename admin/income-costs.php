@@ -55,7 +55,7 @@ $total_pages = ceil($total_records / $records_per_page);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Income and Costs</title>
+  <title>Income</title>
   <link rel="stylesheet" href="../styles/sidebar.css">
   <link rel="stylesheet" href="../styles/topbar.css">
   <link rel="stylesheet" href="../styles/income.css">
@@ -103,7 +103,7 @@ $total_pages = ceil($total_records / $records_per_page);
         </div>
       </header>
 
-      <h1>Income and Costs</h1>
+      <h1>Income</h1>
 
       <!-- Income and Costs Table -->
       <table class="income-cost-table">

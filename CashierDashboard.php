@@ -1,32 +1,29 @@
 <?php
-// Start the session (optional, if you need session-based authentication)
-session_start();
-
 // Database connection
-$servername = "localhost";  // Change to your database server
-$username = "root";         // Change to your database username
-$password = "";             // Change to your database password
-$dbname = "final_project";     // Change to your database name
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "final_project";
 
-// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch products from the database
-$query = "SELECT * FROM products";
-$result = $conn->query($query);
-$products = [];
+// Handle Add to Cart
+if (isset($_POST['add_to_cart'])) {
+    $barcode = $_POST['barcode'];
+    $sql = "SELECT * FROM inventory WHERE barcode_no = '$barcode'";
+    $result = $conn->query($sql);
 
-while ($row = $result->fetch_assoc()) {
-    $products[] = $row;
+    if ($result->num_rows > 0) {
+        $product = $result->fetch_assoc();
+        echo json_encode($product);
+    } else {
+        echo json_encode(["error" => "Product not found"]);
+    }
+    exit;
 }
-
-// Close the connection
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -34,209 +31,197 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sarasavi Enterprices POS System</title>
+    <title>Cashier Dashboard - Sarasavi Enterprises</title>
     <link rel="stylesheet" href="./styles/cashier.css">
 </head>
 <body>
-    <div class="dashboard">
-        <header>
-            <h1>Sarasavi Enterprices POS System</h1>
-        </header>
+    <h1>Sarasavi Enterprises</h1>
 
-        <main>
-            <section class="input-section">
-                <label for="barcode-input">Scan or Enter Barcode:</label>
-                <input type="text" id="barcode-input" placeholder="Enter barcode" autofocus>
-                <button id="add-to-cart-btn">Add to Cart</button>
-            </section>
+    <div class="barcode-search">
+        <input type="text" id="barcode" placeholder="Enter barcode">
+        <button id="add_to_cart">Add to Cart</button>
+    </div>
 
-            <section class="cart-section">
-                <h2>Cart</h2>
-                <table id="cart-table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div class="total-section">
-                    <p>Total: <span id="total-price">0.00</span></p>
-                    <p>Tax: <span id="tax-amount">0.00</span></p>
-                </div>
-                <button id="checkout-btn">Checkout</button>
-            </section>
+    <div class="cart-section">
+        <table id="cart">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Inventory</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Cart items will be dynamically added here -->
+            </tbody>
+        </table>
 
-            <section class="cart-section">
-                <button id="print-bill-btn">Print Bill</button>
-            </section>
-        </main>
+        <div class="cart-summary">
+            <h3>Total: <span id="total">0.00</span></h3>
+            <button id="print_bill">Print Bill</button>
+        </div>
     </div>
 
     <script>
-      // Fetching the products from the PHP code
-      const inventory = <?php echo json_encode($products); ?>; // PHP products array converted to JavaScript
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const cartTableBody = document.querySelector("#cart-table tbody");
-      const totalPriceEl = document.getElementById("total-price");
-      const taxAmountEl = document.getElementById("tax-amount");
-      const barcodeInput = document.getElementById("barcode-input");
-      const addToCartBtn = document.getElementById("add-to-cart-btn");
+        const cart = [];
 
-      function updateCartTable() {
-          cartTableBody.innerHTML = "";
-          let total = 0;
+        document.getElementById('add_to_cart').addEventListener('click', () => {
+            const barcode = document.getElementById('barcode').value;
+            fetch('', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `add_to_cart=true&barcode=${barcode}`
+            })
+            .then(response => response.json())
+            .then(product => {
+                if (product.error) {
+                    alert(product.error);
+                    return;
+                }
 
-          cart.forEach((item, index) => {
-              const row = document.createElement("tr");
+                // Add product to cart
+                const existingItem = cart.find(item => item.barcode === product.barcode_no);
+                if (existingItem) {
+                    alert('Product already in cart');
+                    return;
+                }
 
-              row.innerHTML = `
-                  <td>${item.name}</td>
-                  <td>${item.price.toFixed(2)}</td>
-                  <td>
-                      <button onclick="updateQuantity(${index}, -1)">-</button>
-                      ${item.quantity}
-                      <button onclick="updateQuantity(${index}, 1)">+</button>
-                  </td>
-                  <td>${(item.price * item.quantity).toFixed(2)}</td>
-                  <td><button onclick="removeFromCart(${index})">Remove</button></td>
-              `;
+                const cartItem = {
+                    barcode: product.barcode_no,
+                    name: product.product_name,
+                    price: parseFloat(product.selling_price),
+                    inventory: product.quantity,
+                    quantity: 1,
+                    total: parseFloat(product.selling_price)
+                };
+                cart.push(cartItem);
+                renderCart();
 
-              cartTableBody.appendChild(row);
-              total += item.price * item.quantity;
-          });
+                // Clear barcode input after adding to cart
+                document.getElementById('barcode').value = '';
+            });
+        });
 
-          let tax = total * 0.10; // Tax = 10% of total price
-          total += tax;
+        function renderCart() {
+            const tbody = document.querySelector('#cart tbody');
+            tbody.innerHTML = '';
+            let total = 0;
 
-          totalPriceEl.textContent = total.toFixed(2);
-          taxAmountEl.textContent = tax.toFixed(2);
-      }
+            cart.forEach((item, index) => {
+                const tr = document.createElement('tr');
 
-      function addToCart(product) {
-          const existingProduct = cart.find((item) => item.barcode_no === product.barcode_no);
+                tr.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>${item.inventory}</td>
+                    <td>
+                        <input type="number" value="${item.quantity}" min="1" max="${item.inventory}" data-index="${index}" class="quantity-input">
+                    </td>
+                    <td>${item.total.toFixed(2)}</td>
+                    <td>
+                        <button class="delete-btn" data-index="${index}">Delete</button>
+                    </td>
+                `;
 
-          if (existingProduct) {
-              existingProduct.quantity += 1;
-          } else {
-              cart.push({ ...product, quantity: 1 });
-          }
+                tbody.appendChild(tr);
+                total += item.total;
+            });
 
-          console.log(cart);  // Debugging line to check cart data
-          updateCartTable();
-          localStorage.setItem('cart', JSON.stringify(cart)); // Persist cart data
-      }
+            document.getElementById('total').textContent = total.toFixed(2);
 
-      function removeFromCart(index) {
-          cart.splice(index, 1);
-          updateCartTable();
-          localStorage.setItem('cart', JSON.stringify(cart)); // Persist cart data
-      }
+            // Attach event listeners to delete buttons and quantity inputs
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', deleteItem);
+            });
 
-      function updateQuantity(index, change) {
-          const item = cart[index];
-          if (item.quantity + change > 0) {
-              item.quantity += change;
-              updateCartTable();
-              localStorage.setItem('cart', JSON.stringify(cart)); // Persist cart data
-          }
-      }
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('input', updateQuantity);
+            });
+        }
 
-      function generateReceipt() {
-          let receiptContent = `
-              <div style="font-family: Arial; font-size: 12px; width: 240px;">
-                  <h3 style="text-align: center;">POS System</h3>
-                  <p style="text-align: center;">Thank you for shopping!</p>
-                  <hr>
-                  <table style="width: 100%; border-collapse: collapse;">
-                      <thead>
-                          <tr>
-                              <th style="text-align: left;">Item</th>
-                              <th style="text-align: right;">Qty</th>
-                              <th style="text-align: right;">Total</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-          `;
+        function deleteItem(event) {
+            const index = event.target.dataset.index;
+            cart.splice(index, 1);
+            renderCart();
+        }
 
-          let total = 0;
-          cart.forEach((item) => {
-              const itemTotal = item.price * item.quantity;
-              total += itemTotal;
+        function updateQuantity(event) {
+            const index = event.target.dataset.index;
+            const quantity = parseInt(event.target.value);
+            const item = cart[index];
 
-              receiptContent += `
-                  <tr>
-                      <td style="text-align: left;">${item.name}</td>
-                      <td style="text-align: right;">${item.quantity}</td>
-                      <td style="text-align: right;">${itemTotal.toFixed(2)}</td>
-                  </tr>
-              `;
-          });
+            if (quantity > item.inventory) {
+                alert('Exceeds available stock');
+                event.target.value = item.inventory;
+                return;
+            }
 
-          receiptContent += `
-                      </tbody>
-                  </table>
-                  <hr>
-                  <p style="text-align: right; font-weight: bold;">Total: $${total.toFixed(2)}</p>
-                  <p style="text-align: center;">Visit us again!</p>
-              </div>
-          `;
+            item.quantity = quantity;
+            item.total = item.price * quantity;
+            renderCart();
+        }
 
-          return receiptContent;
-      }
+        function generateReceipt() {
+            const billNo = Math.floor(Math.random() * 100000); // Generate random bill number
+            const dateTime = new Date().toLocaleString(); // Get current date and time
 
-      function printBill() {
-          const receiptWindow = window.open("", "Print Receipt", "width=300,height=600");
-          receiptWindow.document.write(generateReceipt());
-          receiptWindow.document.close();
-          receiptWindow.focus();
-          receiptWindow.print();
-          setTimeout(() => receiptWindow.close(), 1000); // Auto-close after 1 second
-      }
+            let receiptContent = `
+                <div style="font-family: Arial; font-size: 12px; width: 240px;">
+                    <h3 style="text-align: center;">SARASAVI ENTERPRISES</h3>
+                    <p style="text-align: center;">215/3, Main Street, Dompe, Sri Lanka</p>
+                    <p style="text-align: center;">Date: ${dateTime}</p>
+                    <p style="text-align: center;">Bill No: ${billNo}</p>
+                    <hr>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">Item</th>
+                                <th style="text-align: right;">Qty</th>
+                                <th style="text-align: right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
 
-      function checkout() {
-          const cartData = cart.map(item => ({
-              id: item.id,
-              quantity: item.quantity,
-          }));
+            let total = 0;
+            cart.forEach((item) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
 
-          const xhr = new XMLHttpRequest();
-          xhr.open("POST", "update_quantity.php", true);
-          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          xhr.onload = function () {
-              if (xhr.status === 200) {
-                  alert("Checkout successful!");
-                  cart = []; // Clear the cart
-                  localStorage.removeItem('cart'); // Remove cart data from localStorage
-                  updateCartTable(); // Update the cart table
-              } else {
-                  alert("Error processing checkout.");
-              }
-          };
-          xhr.send("cart=" + JSON.stringify(cartData)); // Send the cart data as JSON
-      }
+                receiptContent += `
+                    <tr>
+                        <td style="text-align: left;">${item.name}</td>
+                        <td style="text-align: right;">${item.quantity}</td>
+                        <td style="text-align: right;">LKR ${itemTotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
 
-      addToCartBtn.addEventListener("click", () => {
-          const barcode = barcodeInput.value.trim();
-          console.log(barcode);  // Debugging line
-          const product = inventory.find((item) => item.barcode_no === barcode);
+            receiptContent += `
+                        </tbody>
+                    </table>
+                    <hr>
+                    <p style="text-align: right; font-weight: bold;">Total: LKR ${total.toFixed(2)}</p>
+                    <p style="text-align: center;">Visit us again!</p>
+                </div>
+            `;
 
-          if (product) {
-              addToCart(product);
-              barcodeInput.value = "";
-          } else {
-              alert("Product not found!");
-          }
-      });
+            return receiptContent;
+        }
 
-      document.getElementById("checkout-btn").addEventListener("click", checkout);
-      document.getElementById("print-bill-btn").addEventListener("click", printBill);
+        function printBill() {
+            const receiptWindow = window.open("", "Print Receipt", "width=300,height=600");
+            receiptWindow.document.write(generateReceipt());
+            receiptWindow.document.close();
+            receiptWindow.focus();
+            receiptWindow.print();
+            setTimeout(() => receiptWindow.close(), 1000); // Auto-close after 1 second
+        }
 
-      updateCartTable();
+        document.getElementById('print_bill').addEventListener('click', printBill);
     </script>
 </body>
 </html>

@@ -123,7 +123,7 @@ $conn->close();
         <div class="card">
           <i class="fas fa-dollar-sign card-icon"></i>
           <h3>Predicted Income</h3>
-          <p>$<?= number_format($totalIncome, 2); ?></p>
+          <p>LKR<?= number_format($totalIncome, 2); ?></p>
         </div>
       </section>
 

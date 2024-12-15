@@ -119,7 +119,7 @@ $conn->close();
             <th>ID</th>
             <th>Start Date</th>
             <th>Amount</th>
-            <th>Budget Rate</th>
+            <th>Description</th>
             <th>End Date</th>
             <th>Created At</th>
             <th>Actions</th>
@@ -132,8 +132,8 @@ $conn->close();
                   echo "<tr>";
                   echo "<td>" . $row['id'] . "</td>";
                   echo "<td>" . $row['start_date'] . "</td>";
-                  echo "<td>" . $row['amount'] . "</td>";
-                  echo "<td>" . $row['budget_rate'] . "</td>";
+                  echo "<td>LKR" . number_format($row['amount'], 2) . "</td>";
+                  echo "<td>" . htmlspecialchars($row['description']) . "</td>";
                   echo "<td>" . $row['end_date'] . "</td>";
                   echo "<td>" . $row['created_at'] . "</td>";
                   echo "<td>

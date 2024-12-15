@@ -1,175 +1,84 @@
-/* Global Styles */
-* {
+body {
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7fc;
-    color: #333;
-    line-height: 1.6;
-}
-
-/* Dashboard Container */
-.dashboard {
-    width: 100%;
-    max-width: 1400px; /* Increased width for a more spacious layout */
-    margin: 0 auto;
-    padding: 30px;
-}
-
-/* Header Styles */
-header {
-    text-align: center;
-    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f9;
 }
 
 h1 {
-    font-size: 3rem; /* Larger font for more emphasis */
-    color: #e24a4a;
-    font-weight: bold;
-    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-/* Section Styles */
-section {
-    background-color: white;
-    padding: 25px; /* Increased padding for a cleaner look */
-    margin-bottom: 25px;
-    border-radius: 12px; /* Smoother border radius */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); /* Softer and wider shadow for depth */
+.barcode-search {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-/* Input and Button Styles */
-label {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    display: block;
-    color: #555;
+.barcode-search input {
+    padding: 10px;
+    width: 300px;
+    font-size: 16px;
 }
 
-input[type="text"],
-input[type="number"] {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ccc;
-    border-radius: 8px; /* More rounded corners */
-    margin-bottom: 18px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-
-input[type="text"]:focus,
-input[type="number"]:focus {
-    border-color: #4a90e2;
-    outline: none;
-}
-
-button {
-    padding: 12px 20px;
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 1.1rem;
+.barcode-search button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-left: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-weight: bold;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
 }
 
-button:hover {
-    background-color: #357ab7;
+.cart-section {
+    text-align: center;
+    width: 80%;
+    max-width: 800px;
+    margin: auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Cart Table Styles */
-#cart-table {
+table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
-#cart-table th,
-#cart-table td {
-    padding: 15px;
-    text-align: left;
-    font-size: 1.1rem;
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
 }
 
-#cart-table th {
-    background-color: #f5f5f5;
+table th {
+    background-color: #007bff;
+    color: #fff;
 }
 
-#cart-table td {
-    background-color: #fff;
-    border-bottom: 1px solid #f1f1f1;
+.cart-summary {
+    text-align: center;
 }
 
-/* Payment Section */
-#payment-section {
-    background-color: #fafafa;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+.cart-summary h3 {
+    margin-bottom: 10px;
 }
 
-#payment-section.hidden {
-    display: none;
-}
-
-#payment-info {
-    margin-top: 20px;
-}
-
-#payment-info input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 18px;
-    border-radius: 8px;
-}
-
-#payment-info p {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #4a90e2;
-}
-
-/* Total Section */
-.total-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #333;
-}
-
-.total-section p {
-    font-weight: bold;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    .dashboard {
-        padding: 15px; /* Reduced padding for smaller screens */
-    }
-
-    section {
-        padding: 20px; /* Reduced padding for smaller screens */
-    }
-
-    button {
-        padding: 10px 15px;
-    }
-
-    input[type="text"],
-    input[type="number"] {
-        padding: 10px;
-    }
-
-    .total-section {
-        font-size: 1.1rem;
-    }
+.cart-summary button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
 }
