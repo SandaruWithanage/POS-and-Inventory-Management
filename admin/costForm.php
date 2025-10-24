@@ -63,7 +63,7 @@ $conn->close();
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
@@ -73,10 +73,10 @@ $conn->close();
         <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
-      <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
 
     <!-- Main Content -->

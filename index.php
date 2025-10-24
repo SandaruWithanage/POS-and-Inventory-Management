@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     header("Location: supply_manager_dashboard.php");
                     break;
                 case "Admin":
-                    header("Location: dashboard.html");
+                    header("Location: dashboard.php");
                     break;
                 case "CustomerRelation":
                     header("Location: customer_manager_dashboard.php");

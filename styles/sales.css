@@ -3,8 +3,8 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #2a2a2a; /* Dark gray background */
-    color: #ffffff; /* White text color for dark theme */
+    background-color: #f4f7fa;
+    color: #2c3e50;
 }
 
 .container {
@@ -17,61 +17,209 @@ body {
     flex: 1;
     padding: 40px;
     margin-left: 270px; /* Sidebar width + gap */
-    background-color: #2a2a2a; /* Matches body background */
 }
 
 h1 {
     font-size: 32px;
-    color: #ffffff; /* White text for heading */
+    color: #2c3e50;
     margin-bottom: 20px;
 }
 
 /* Table Styles */
-table {
+.sales-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-    background-color: #1a1a1a; /* Darker background for table */
-    color: #ffffff; /* White text for dark table */
+    background-color: #ffffff;
+    color: #2c3e50;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
 }
 
-thead {
-    background-color: #004085; /* Deep navy blue header */
-    color: #ffffff; /* White text for header */
+.sales-table thead {
+    background-color: #3498db;
+    color: #ffffff;
 }
 
-th, td {
+.sales-table th,
+.sales-table td {
     padding: 12px 15px;
-    border: 1px solid #343a40; /* Subtle border for cells */
+    border: 1px solid #ddd;
     text-align: left;
 }
 
-tbody tr:nth-child(even) {
-    background-color: #2d2d2d; /* Slightly lighter gray for even rows */
+.sales-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
 }
 
-tbody tr:hover {
-    background-color: #004085; /* Deep navy blue for hover effect */
-}
-
-td {
-    color: #ffffff; /* White text */
+.sales-table tbody tr:hover {
+    background-color: #e1f5fe;
 }
 
 /* Action Buttons */
-.edit-btn, .add-sale-btn {
+.edit-btn,
+.delete-btn,
+.add-sale-btn {
     padding: 10px 15px;
-    background-color: #0062cc; /* Button matches dark theme */
-    color: #ffffff; /* White text for buttons */
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
-.edit-btn:hover, .add-sale-btn:hover {
-    background-color: #004085; /* Navy blue for hover effect */
+.edit-btn {
+    background-color: #3498db;
+}
+
+.edit-btn:hover {
+    background-color: #2980b9;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.add-sale-btn {
+    background-color: #27ae60;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+.add-sale-btn:hover {
+    background-color: #219150;
+}
+
+/* Search Bar Styling (top bar input) */
+.search-bar input {
+    padding: 8px 15px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 14px;
+    width: 250px;
+    outline: none;
+}
+
+.search-bar input:focus {
+    border-color: #3498db;
+}
+
+/* Top Bar */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 10px 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.top-bar .icon {
+    margin: 0 10px;
+    color: #2c3e50;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.top-bar .icon:hover {
+    color: #3498db;
+}
+
+/* EDIT/ADD SALE FORM STYLES */
+.edit-sale-form,
+.add-sale-form {
+    background: #ffffff;
+    border-radius: 10px;
+    max-width: 450px;
+    margin: 30px auto 0 auto;
+    padding: 36px 30px;
+    box-shadow: 0 4px 18px rgba(44, 62, 80, 0.07);
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d4d9e3;
+    border-radius: 6px;
+    background-color: #fafbfc;
+    font-size: 16px;
+    color: #2c3e50;
+    transition: border 0.2s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group input[type="date"]:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.form-group button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.form-group button:hover {
+    background-color: #2980b9;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 20px;
+        margin-left: 0;
+    }
+    h1 {
+        font-size: 24px;
+    }
+    .sales-table th,
+    .sales-table td {
+        font-size: 13px;
+        padding: 10px;
+    }
+    .add-sale-btn {
+        width: 100%;
+        font-size: 14px;
+    }
+    .search-bar input {
+        width: 100%;
+    }
+    .edit-sale-form,
+    .add-sale-form {
+        max-width: 97vw;
+        padding: 18px 8px;
+    }
 }

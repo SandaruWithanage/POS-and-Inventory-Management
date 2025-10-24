@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Execute the query
     if ($stmt->execute()) {
-        header("Location: purches.php"); // Redirect after successful insertion
+        header("Location: purchase.php"); // Redirect after successful insertion
         exit;
     } else {
         echo "Error executing the query: " . implode(" ", $stmt->errorInfo());
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
-      <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
 
     <!-- Main Content -->

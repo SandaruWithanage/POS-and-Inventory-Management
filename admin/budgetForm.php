@@ -18,14 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Get form data
   $startDate = $_POST['startDate'];
   $amount = $_POST['amount'];
-  $budgetRate = $_POST['budgetRate'];
+  $description = $_POST['description'];
   $endDate = $_POST['endDate'];
 
   // Validate the input
-  if (!empty($startDate) && !empty($amount) && !empty($budgetRate) && !empty($endDate)) {
+  if (!empty($startDate) && !empty($amount) && !empty($description) && !empty($endDate)) {
     // Prepare the SQL query
-    $sql = "INSERT INTO budget (start_date, amount, budget_rate, end_date) 
-            VALUES ('$startDate', '$amount', '$budgetRate', '$endDate')";
+    $sql = "INSERT INTO budget (start_date, amount, description, end_date) 
+            VALUES ('$startDate', '$amount', '$description', '$endDate')";
 
     // Execute the query
     if ($conn->query($sql) === TRUE) {
@@ -61,20 +61,21 @@ $conn->close();
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
+        <li><a href="budget.php" class="active"><i class="fas fa-coins"></i> Budget</a></li>
         <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
         <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purches.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="reports.php"><i class="fas fa-user-cog"></i> Reports</a></li>
       </ul>
-      <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
 
     <!-- Main Content -->
@@ -113,8 +114,8 @@ $conn->close();
         </div>
 
         <div class="form-group">
-          <label for="budgetRate">Budget Rate (%)</label>
-          <input type="number" id="budgetRate" name="budgetRate" required>
+          <label for="description">Description</label>
+          <input type="text" id="description" name="description" required>
         </div>
 
         <div class="form-group">
@@ -131,4 +132,4 @@ $conn->close();
     </main>
   </div>
 </body>
-</html> 
+</html>

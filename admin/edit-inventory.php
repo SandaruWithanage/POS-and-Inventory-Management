@@ -34,7 +34,7 @@ if (isset($_GET['id'])) {
 // Update inventory functionality
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $productName = $_POST['product_name'] ?? null;
-    $barcodeNo = $_POST['barcode_no'] ?? null;
+    $barcodeNo = "SHOE" . date('Ymd') . sprintf('%04d', rand(1, 9999));  // Auto-generate barcode
     $category = $_POST['category'] ?? null;
     $quantity = $_POST['quantity'] ?? null;
     $unitPrice = $_POST['unit_price'] ?? null;
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Calculate total value
     $totalValue = $quantity * $sellingPrice;
 
-    if ($productName !== null && $barcodeNo !== null && $category !== null && $quantity !== null && $unitPrice !== null && $sellingPrice !== null) {
+    if ($productName !== null && $category !== null && $quantity !== null && $unitPrice !== null && $sellingPrice !== null) {
         // Update the inventory record in the database
         $stmt = $pdo->prepare("
             UPDATE inventory 
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             WHERE id = :id
         ");
         $stmt->bindParam(':product_name', $productName);
-        $stmt->bindParam(':barcode_no', $barcodeNo);
+        $stmt->bindParam(':barcode_no', $barcodeNo);  // Use auto-generated barcode
         $stmt->bindParam(':category', $category);
         $stmt->bindParam(':quantity', $quantity);
         $stmt->bindParam(':unit_price', $unitPrice);
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
@@ -98,10 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
-      <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
 
     <!-- Main Content -->
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <div class="form-group">
           <label for="barcode_no">Barcode No</label>
-          <input type="text" id="barcode_no" name="barcode_no" value="<?php echo htmlspecialchars($inventory['barcode_no']); ?>" required>
+          <input type="text" id="barcode_no" name="barcode_no" value="<?php echo htmlspecialchars($inventory['barcode_no']); ?>" disabled> <!-- Barcode is auto-generated -->
         </div>
 
         <div class="form-group">

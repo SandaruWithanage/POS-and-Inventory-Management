@@ -1,6 +1,3 @@
-
-
-
 <?php
 // Database connection
 $host = "localhost";
@@ -85,9 +82,12 @@ $conn->close();
         <li><a href="admin/shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
         <li><a href="admin/purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="admin/roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="admin/reports.php"><i class="fas fa-user-cog"></i> Reports</a></li>
+        
       </ul>
-      <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <a href="admin/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
+
 
     <!-- Main Content -->
     <main class="main-content">

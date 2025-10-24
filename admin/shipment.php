@@ -46,7 +46,7 @@ $shipments = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php" class="active"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purches.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>

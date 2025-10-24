@@ -19,7 +19,7 @@ $message = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data and use trim() to remove any whitespace around inputs
     $productName = trim($_POST['productName']);
-    $barcodeNo = trim($_POST['barcodeNo']);
+    $barcodeNo = "SHOE" . date('Ymd') . sprintf('%04d', rand(1, 9999));  // Auto-generate barcode
     $productCategory = trim($_POST['productCategory']);
     $productQuantity = !empty($_POST['productQuantity']) ? intval($_POST['productQuantity']) : 0;
     $unitPrice = !empty($_POST['unitPrice']) ? floatval($_POST['unitPrice']) : 0.0;
@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Validate required fields
-    if (!empty($productName) && !empty($barcodeNo) && !empty($productCategory) && $productQuantity >= 0 && $unitPrice > 0.0 && $sellingPrice > 0.0 && !empty($stockStatus)) {
+    if (!empty($productName) && !empty($productCategory) && $productQuantity >= 0 && $unitPrice > 0.0 && $sellingPrice > 0.0 && !empty($stockStatus)) {
         // Calculate total value
         $totalValue = $productQuantity * $unitPrice;
 
@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Execute the query and check for success
             if ($stmt->execute()) {
-                $message = "New product added successfully!";
+                $message = "New product added successfully with Barcode: " . $barcodeNo;
                 // Redirect back to inventory.php after success
                 header("Location: inventory.php");
                 exit(); // Make sure to exit after redirect
@@ -118,7 +118,7 @@ $conn->close();
   <div class="container">
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
@@ -128,10 +128,10 @@ $conn->close();
         <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
         <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
-      <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
 
     <main class="main-content">
@@ -161,21 +161,22 @@ $conn->close();
           <label for="productName">Product Name</label>
           <input type="text" id="productName" name="productName" required>
         </div>
-        <div class="form-group">
-          <label for="productImage">Product Image</label>
-          <input type="file" id="productImage" name="productImage" accept="image/*" required>
-        </div>
-        <div class="form-group">
-          <label for="barcodeNo">Barcode No:</label>
-          <input type="text" id="barcodeNo" name="barcodeNo" required>
-        </div>
 
+        <!-- Barcode input is removed since it's auto-generated -->
         <div class="form-group">
           <label for="productCategory">Category</label>
           <select id="productCategory" name="productCategory" required>
-            <option value=""></option>
-            <option value="electronics">Electronics</option>
-            <option value="furniture">Furniture</option>
+            <option value="">-- Select Category --</option>
+            <option value="Sneakers">Sneakers</option>
+            <option value="Formal Shoes">Formal Shoes</option>
+            <option value="Casual Shoes">Casual Shoes</option>
+            <option value="Boots">Boots</option>
+            <option value="Sandals">Sandals</option>
+            <option value="Heels">Heels</option>
+            <option value="Flats">Flats</option>
+            <option value="Athletic & Sports Shoes">Athletic & Sports Shoes</option>
+            <option value="Slippers">Slippers</option>
+            <option value="Kids' Shoes">Kids' Shoes</option>
           </select>
         </div>
 

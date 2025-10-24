@@ -18,14 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Get form data
   $startDate = $_POST['startDate'];
   $amount = $_POST['amount'];
-  $budgetRate = $_POST['budgetRate'];
+  $description = $_POST['description'];
   $endDate = $_POST['endDate'];
 
   // Validate the input
-  if (!empty($startDate) && !empty($amount) && !empty($budgetRate) && !empty($endDate)) {
+  if (!empty($startDate) && !empty($amount) && !empty($description) && !empty($endDate)) {
     // Prepare the SQL query
-    $sql = "INSERT INTO budget (start_date, amount, budget_rate, end_date) 
-            VALUES ('$startDate', '$amount', '$budgetRate', '$endDate')";
+    $sql = "INSERT INTO budget (start_date, amount, description, end_date) 
+            VALUES ('$startDate', '$amount', '$description', '$endDate')";
 
     // Execute the query
     if ($conn->query($sql) === TRUE) {
@@ -113,9 +113,10 @@ $conn->close();
         </div>
 
         <div class="form-group">
-          <label for="budgetRate">Budget Rate (%)</label>
-          <input type="number" id="budgetRate" name="budgetRate" required>
+          <label for="description">Description</label>
+          <input type="text" id="description" name="description" required>
         </div>
+
 
         <div class="form-group">
           <label for="endDate">End Date</label>

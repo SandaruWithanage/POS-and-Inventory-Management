@@ -88,9 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
             <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
             <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
             </ul>
-            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
-        </aside>
-
+            <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
+    </aside>
         <!-- Main Content -->
         <main class="main-content">
             <header>

@@ -47,16 +47,28 @@ if (isset($_GET['delete_id'])) {
     $deleteStmt = $conn->prepare($deleteSql);
     $deleteStmt->bindParam(':id', $deleteId, PDO::PARAM_INT);
     $deleteStmt->execute();
+
+    // Re-sequence inventory IDs after deletion
+    $reSequenceSql = "SET @rank := 0; UPDATE inventory SET id = (@rank := @rank + 1);";
+    $conn->query($reSequenceSql);
+
+    // If all records are deleted, reset AUTO_INCREMENT to 1
+    $checkSql = "SELECT COUNT(*) AS count FROM inventory";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->execute();
+    $count = $checkStmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+    if ($count === 0) {
+        $resetAutoIncrementSql = "ALTER TABLE inventory AUTO_INCREMENT = 1";
+        $conn->query($resetAutoIncrementSql);
+    }
+
     header("Location: inventory.php"); // Redirect to avoid resubmission on refresh
     exit();
 }
 
 // Renumber the inventory IDs after deletion
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
-    // Re-sequence inventory IDs after deletion
-    $reSequenceSql = "SET @rank := 0; UPDATE inventory SET id = (@rank := @rank + 1);";
-    $conn->query($reSequenceSql);
-
     echo json_encode([
         'data' => $inventoryData,
         'currentPage' => $page,
@@ -94,7 +106,7 @@ $conn = null;
                 <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
                 <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
                 <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-                <li><a href="purchases.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+                <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
                 <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
             </ul>
             <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
