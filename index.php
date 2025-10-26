@@ -2,7 +2,7 @@
 session_start();
 
 // =========================================================
-// ✅ DATABASE CONNECTION
+//  DATABASE CONNECTION
 // =========================================================
 $servername = "localhost";
 $db_username = "root";
