@@ -1,15 +1,23 @@
-/* General Styling */
+/* ===================================================
+   GLOBAL STYLING — dark, modern glowing design
+   =================================================== */
+
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7fa;
+    background: linear-gradient(135deg, #1d1f21, #2a2d31);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     overflow: hidden;
+    color: #fff;
 }
+
+/* ===================================================
+   LOGIN CONTAINER
+   =================================================== */
 
 .login-container {
     width: 100%;
@@ -18,31 +26,43 @@ body {
 }
 
 .login-box {
-    width: 350px;
-    background-color: white;
+    width: 380px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
     padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
     text-align: center;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
 }
 
 .login-box:hover {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
 }
 
 .logo img {
-    width: 120px;
-    margin-bottom: 20px;
+    width: 90px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 8px rgba(0, 188, 212, 0.5);
 }
 
+/* ===================================================
+   TEXT & HEADINGS
+   =================================================== */
+
 h2 {
-    color: #333;
+    color: #00bcd4;
     margin-bottom: 20px;
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 26px;
+    font-weight: 600;
     letter-spacing: 1px;
 }
+
+/* ===================================================
+   INPUT FIELDS
+   =================================================== */
 
 .input-group {
     margin-bottom: 20px;
@@ -51,68 +71,96 @@ h2 {
 
 .input-group label {
     font-size: 14px;
-    color: #333;
+    font-weight: 500;
+    color: #cfd8dc;
 }
 
 .input-group input {
     width: 100%;
-    padding: 14px;
-    border: 1px solid #ddd;
-    border-radius: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
     margin-top: 5px;
-    font-size: 16px;
-    color: #333;
-    transition: border-color 0.3s ease;
+    font-size: 15px;
+    color: #fff;
+    background-color: rgba(255,255,255,0.1);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.input-group input::placeholder {
+    color: #b0bec5;
 }
 
 .input-group input:focus {
     outline: none;
-    border-color: #e74c3c; /* Red border on focus */
+    background-color: rgba(255,255,255,0.15);
+    box-shadow: 0 0 10px #00bcd4;
 }
 
-button {
+/* ===================================================
+   BUTTON STYLING
+   =================================================== */
+
+button, .btn {
     width: 100%;
-    padding: 14px;
-    background-color: #e74c3c; /* Red button */
+    padding: 12px;
+    background: #00bcd4;
     color: white;
     border: none;
-    border-radius: 15px;
+    border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
-    align:center;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+button:hover, .btn:hover {
+    background: #0097a7;
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px rgba(0,188,212,0.5);
+}
+
+button:active, .btn:active {
+    transform: scale(0.98);
+}
+
+/* ===================================================
+   ERROR & MESSAGE STYLING
+   =================================================== */
+
+.error-message {
+    color: #ff5252;
+    font-size: 14px;
+    margin-top: 10px;
+    font-weight: 500;
+    text-shadow: 0 0 5px rgba(255,82,82,0.4);
+}
+
+/* ===================================================
+   ANIMATIONS (optional subtle pulse)
+   =================================================== */
+
+@keyframes glow {
+    0% { box-shadow: 0 0 10px rgba(0,188,212,0.2); }
+    50% { box-shadow: 0 0 20px rgba(0,188,212,0.6); }
+    100% { box-shadow: 0 0 10px rgba(0,188,212,0.2); }
 }
 
 button:hover {
-    background-color: #c0392b; /* Darker red on hover */
-    transform: scale(1.05);
+    animation: glow 1.5s infinite;
 }
 
-button:active {
-    transform: scale(1.02);
-}
+/* ===================================================
+   MOBILE RESPONSIVENESS
+   =================================================== */
 
-.error-message {
-    color: #e74c3c; /* Red text for error */
-    font-size: 14px;
-    margin-top: 10px;
-}
-
-/* iOS-style Input */
-.input-group input {
-    background-color: #f5f5f5;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.input-group input:focus {
-    background-color: #fff;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Center align button */
-button {
-    display: inline-block; /* Make button inline */
-    margin-top: 10px; /* Add some space from inputs */
-    width: 100%; /* Ensure the button takes the full width */
+@media (max-width: 480px) {
+    .login-box {
+        width: 90%;
+        padding: 30px;
+    }
+    h2 {
+        font-size: 22px;
+    }
 }

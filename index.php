@@ -1,75 +1,86 @@
 <?php
 session_start();
 
-// Database connection
+// =========================================================
+// ✅ DATABASE CONNECTION
+// =========================================================
 $servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "final_project"; // Replace with your actual database name
+$db_username = "root";
+$db_password = "";
+$dbname = "final_project";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
+$conn = new mysqli($servername, $db_username, $db_password, $dbname);
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("<h3 style='color:red;'>❌ Connection failed:</h3> " . $conn->connect_error);
 }
 
-// Handle login request via GET method (using URL parameters)
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    // Get username and password from URL
-    if (isset($_GET['username']) && isset($_GET['password'])) {
-        $username = $_GET['username'];
-        $password = $_GET['password'];
+// =========================================================
+// ✅ HANDLE LOGIN (SECURE POST METHOD)
+// =========================================================
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (!empty($_POST['username']) && !empty($_POST['password'])) {
+        $username = trim($_POST['username']);
+        $password = trim($_POST['password']);
 
-        // Prepare and execute query
+        // Check user
         $stmt = $conn->prepare("SELECT role_name, password FROM roles WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $stmt->bind_result($role, $hashedPassword);
-        $stmt->fetch();
-        $stmt->close();
+        if ($stmt) {
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $stmt->store_result();
 
-        // Validate credentials
-        if ($role && $password == $hashedPassword) {
-            // Store user information in the session
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = $role;
+            if ($stmt->num_rows === 1) {
+                $stmt->bind_result($role, $hashedPassword);
+                $stmt->fetch();
 
-            // Redirect based on role
-            switch ($role) {
-                case "SupplyManager":
-                    header("Location: supply_manager_dashboard.php");
-                    break;
-                case "Admin":
-                    header("Location: dashboard.php");
-                    break;
-                case "CustomerRelation":
-                    header("Location: customer_manager_dashboard.php");
-                    break;
-                case "FinanceManager":
-                    header("Location: finance_manager_dashboard.php");
-                    break;
-                case "ProcurementManager":
-                    header("Location: procurement_manager_dashboard.php");
-                    break;
-                 case "InventoryManager":
-                     header("Location: inventory_manager_dashboard.php");
-                     break;
-                case "Cashier":
-                    header("Location: CashierDashboard.php");
-                    break;
-                default:
-                    echo "<p style='color:red;'>No dashboard available for this role</p>";
+                // ✅ Verify hashed password
+                if (password_verify($password, $hashedPassword)) {
+                    $_SESSION['username'] = $username;
+                    $_SESSION['role'] = strtolower($role);
+
+                    // ✅ Redirect based on role_name
+                    switch (strtolower($role)) {
+                        case "supplymanager":
+                            header("Location: supply_manager_dashboard.php");
+                            exit;
+                        case "admin":
+                            header("Location: dashboard.php");
+                            exit;
+                        case "customerrelation":
+                            header("Location: customer_manager_dashboard.php");
+                            exit;
+                        case "financemanager":
+                            header("Location: finance_manager_dashboard.php");
+                            exit;
+                        case "procurementmanager":
+                            header("Location: procurement_manager_dashboard.php");
+                            exit;
+                        case "inventorymanager":
+                            header("Location: inventory_manager_dashboard.php");
+                            exit;
+                        case "cashier":
+                            header("Location: CashierDashboard.php");
+                            exit;
+                        default:
+                            $error = "⚠️ No dashboard available for this role.";
+                    }
+                } else {
+                    $error = "❌ Invalid password.";
+                }
+            } else {
+                $error = "❌ Username not found.";
             }
+            $stmt->close();
         } else {
-            echo "<p style='color:red;'>Invalid username or password</p>";
+            $error = "Database error: " . $conn->error;
         }
+    } else {
+        $error = "⚠️ Please fill in all fields.";
     }
 }
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -82,10 +93,10 @@ $conn->close();
     <div class="login-container">
         <div class="login-box">
             <div class="logo">
-                <img src="assets/logo.jpg" alt="Logo" />
+                <img src="assets/logo.jpg" alt="Logo" style="width:80px;height:80px;border-radius:10px;">
             </div>
             <h2>Sign In</h2>
-            <form id="loginForm" method="GET">
+            <form id="loginForm" method="POST" action="">
                 <div class="input-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" placeholder="Enter your username" required>
@@ -95,10 +106,11 @@ $conn->close();
                     <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 </div>
                 <button type="submit" class="btn">Login</button>
-                <div id="error-message" class="error-message"></div>
+                <?php if (!empty($error)): ?>
+                    <div class="error-message"><?= $error ?></div>
+                <?php endif; ?>
             </form>
         </div>
     </div>
-
 </body>
 </html>
