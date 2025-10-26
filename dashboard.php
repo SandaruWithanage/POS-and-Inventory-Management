@@ -73,14 +73,11 @@ $conn->close();
         <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="admin/inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
         <li><a href="admin/suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="admin/budget.php"><i class="fas fa-coins"></i> Budget</a></li>
         <li><a href="admin/costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
         <li><a href="admin/income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="admin/sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
         <li><a href="admin/orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="admin/customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="admin/shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="admin/purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="admin/roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
         <li><a href="admin/reports.php"><i class="fas fa-user-cog"></i> Reports</a></li>
         

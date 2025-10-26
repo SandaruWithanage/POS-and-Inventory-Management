@@ -114,11 +114,11 @@
   }
   
   form input[type="text"]:focus {
-    border-color: #3498db;
+    border-color: #2c3e50;
   }
   
   button[type="submit"] {
-    background: #3498db;
+    background: #2c3e50;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -128,7 +128,7 @@
   }
   
   button[type="submit"]:hover {
-    background: #2980b9;
+    background: #2c3e50;
   }
   
   /* Responsive Adjustments */

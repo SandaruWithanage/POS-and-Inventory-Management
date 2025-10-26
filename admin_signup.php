@@ -41,7 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->close();
 
             // Hash password for security
-            $hashed = password_hash($password, PASSWORD_BCRYPT);
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            $stmt = $conn->prepare("INSERT INTO roles (role_name, username, password, description) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $role_name, $username, $hashedPassword, $description);
 
             // Insert new admin record
             $stmt = $conn->prepare(

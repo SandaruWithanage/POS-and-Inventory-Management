@@ -1,5 +1,7 @@
 <?php
-// Database connection
+// =====================================================
+// ✅ DATABASE CONNECTION
+// =====================================================
 $servername = "localhost";
 $db_username = "root";
 $db_password = "";
@@ -10,42 +12,101 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Delete logic
+// =====================================================
+// ✅ DELETE LOGIC (Admin cannot be deleted)
+// =====================================================
 if (isset($_GET['delete_id'])) {
     $deleteId = $_GET['delete_id'];
+
+    // Check if deleting Admin
+    $checkAdmin = $conn->prepare("SELECT role_name FROM roles WHERE id = ?");
+    $checkAdmin->bind_param("i", $deleteId);
+    $checkAdmin->execute();
+    $checkAdmin->bind_result($roleToDelete);
+    $checkAdmin->fetch();
+    $checkAdmin->close();
+
+    if (strtolower($roleToDelete) === 'admin') {
+        echo "<script>alert('⚠️ Admin role cannot be deleted!'); window.location.href='roles.php';</script>";
+        exit();
+    }
+
+    // Delete role
     $deleteQuery = "DELETE FROM roles WHERE id = ?";
     $stmt = $conn->prepare($deleteQuery);
     $stmt->bind_param("i", $deleteId);
+
     if ($stmt->execute()) {
-        // Reorder IDs
-        $conn->query("SET @id := 0; UPDATE roles SET id = (@id := @id + 1) ORDER BY id");
-        echo "<script>alert('Role deleted and IDs reordered successfully!'); window.location.href = 'roles.php';</script>";
+        reorderRoleIDs($conn);
+        echo "<script>alert('✅ Role deleted and IDs reordered successfully!'); window.location.href = 'roles.php';</script>";
     } else {
-        echo "<p style='color:red;'>Error: " . $stmt->error . "</p>";
+        echo "<p style='color:red;'>Error deleting role: " . $stmt->error . "</p>";
     }
     $stmt->close();
 }
 
-// Add role logic
+// =====================================================
+// ✅ FUNCTION TO REORDER IDs (Admin=1, Cashier last)
+// =====================================================
+function reorderRoleIDs($conn) {
+    // Disable FK temporarily
+    $conn->query("SET FOREIGN_KEY_CHECKS = 0;");
+
+    // Get all roles except Admin and Cashier
+    $roles = $conn->query("
+        SELECT id, role_name 
+        FROM roles 
+        WHERE LOWER(role_name) NOT IN ('admin', 'cashier')
+        ORDER BY id ASC
+    ");
+
+    // Admin always ID 1
+    $conn->query("UPDATE roles SET id = 1 WHERE LOWER(role_name) = 'admin'");
+
+    $newId = 2;
+    while ($row = $roles->fetch_assoc()) {
+        $conn->query("UPDATE roles SET id = $newId WHERE id = " . intval($row['id']));
+        $newId++;
+    }
+
+    // Cashier always last
+    $cashier = $conn->query("SELECT id FROM roles WHERE LOWER(role_name) = 'cashier' LIMIT 1");
+    if ($cashier->num_rows > 0) {
+        $conn->query("UPDATE roles SET id = $newId WHERE LOWER(role_name) = 'cashier'");
+    }
+
+    // Reset AUTO_INCREMENT to next available ID
+    $maxID = $conn->query("SELECT MAX(id) AS max_id FROM roles")->fetch_assoc()['max_id'];
+    $conn->query("ALTER TABLE roles AUTO_INCREMENT = " . ($maxID + 1));
+
+    $conn->query("SET FOREIGN_KEY_CHECKS = 1;");
+}
+
+// =====================================================
+// ✅ ADD ROLE LOGIC
+// =====================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['password'], $_POST['role_name'])) {
-    $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $roleName = $_POST['role_name'];
+    $username = trim($_POST['username']);
+    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+    $roleName = trim($_POST['role_name']);
 
     $insertQuery = "INSERT INTO roles (role_name, username, password) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($insertQuery);
     $stmt->bind_param("sss", $roleName, $username, $password);
+
     if ($stmt->execute()) {
-        $conn->query("SET @id := 0; UPDATE roles SET id = (@id := @id + 1) ORDER BY id");
-        echo "<script>alert('New role added successfully!'); window.location.href = 'roles.php';</script>";
+        reorderRoleIDs($conn);
+        echo "<script>alert('✅ New role added and IDs reordered!'); window.location.href = 'roles.php';</script>";
     } else {
         echo "<p style='color:red;'>Error adding role: " . $stmt->error . "</p>";
     }
     $stmt->close();
 }
 
-// Fetch all roles
-$sql = "SELECT id, role_name, username FROM roles";
+// =====================================================
+// ✅ FETCH ROLES
+// =====================================================
+$sql = "SELECT id, role_name, username FROM roles ORDER BY id ASC";
 $result = $conn->query($sql);
 $conn->close();
 ?>
@@ -79,7 +140,7 @@ $conn->close();
       <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
       <li><a href="roles.php" class="active"><i class="fas fa-user-cog"></i> Role Management</a></li>
     </ul>
-    <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+    <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
   </aside>
 
   <!-- Main Content -->
@@ -101,8 +162,8 @@ $conn->close();
     </header>
 
     <h1>Role Management</h1>
+    <button class="submit" type="button" onclick="window.location.href='rolesForm.php'">Add Role</button><br>
 
-    <!-- Roles Table -->
     <table id="rolesTable">
       <thead>
       <tr>
@@ -120,8 +181,10 @@ $conn->close();
             <td><?php echo htmlspecialchars($row['role_name']); ?></td>
             <td><?php echo htmlspecialchars($row['username']); ?></td>
             <td>
-              <a href="edit_role.php?id=<?php echo $row['id']; ?>"><i class="fas fa-edit"></i> Edit</a> |
-              <a href="?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this role?');"><i class="fas fa-trash-alt"></i> Delete</a>
+              <a href="edit_role.php?id=<?php echo $row['id']; ?>"><i class="fas fa-edit"></i> Edit</a>
+              <?php if (strtolower($row['role_name']) !== 'admin'): ?>
+                | <a href="?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this role?');"><i class="fas fa-trash-alt"></i> Delete</a>
+              <?php endif; ?>
             </td>
           </tr>
         <?php endwhile; ?>
@@ -130,23 +193,6 @@ $conn->close();
       <?php endif; ?>
       </tbody>
     </table>
-
-    <h2>Add New Role</h2>
-    <form method="POST">
-      <div class="form-group">
-        <label for="role_name">Role Name</label>
-        <input type="text" id="role_name" name="role_name" required />
-      </div>
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required />
-      </div>
-      <button type="submit">Add Role</button>
-    </form>
   </main>
 </div>
 </body>

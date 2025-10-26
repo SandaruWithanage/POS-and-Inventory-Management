@@ -40,30 +40,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     // ✅ Redirect based on role_name
                     switch (strtolower($role)) {
-                        case "supplymanager":
-                            header("Location: supply_manager_dashboard.php");
-                            exit;
-                        case "admin":
-                            header("Location: dashboard.php");
-                            exit;
-                        case "customerrelation":
-                            header("Location: customer_manager_dashboard.php");
-                            exit;
-                        case "financemanager":
-                            header("Location: finance_manager_dashboard.php");
-                            exit;
-                        case "procurementmanager":
-                            header("Location: procurement_manager_dashboard.php");
-                            exit;
-                        case "inventorymanager":
-                            header("Location: inventory_manager_dashboard.php");
-                            exit;
-                        case "cashier":
-                            header("Location: CashierDashboard.php");
-                            exit;
-                        default:
-                            $error = "⚠️ No dashboard available for this role.";
-                    }
+                case "admin":
+                    header("Location: dashboard.php"); break;
+                case "financemanager":
+                    header("Location: dashboard_finance.php"); break;
+                case "procurementmanager":
+                    header("Location: dashboard_procurement.php"); break;
+                case "inventorymanager":
+                    header("Location: dashboard_inventory.php"); break;
+                case "cashier":
+                    header("Location: dashboard_cashier.php"); break;
+                default:
+                    echo "<p>No dashboard found for this role</p>";
+            }
+                    exit();
+
                 } else {
                     $error = "❌ Invalid password.";
                 }

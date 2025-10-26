@@ -3,7 +3,8 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7fa;
+    background: linear-gradient(135deg, #1d1f21, #2a2d31);
+    
 }
 
 .container {
@@ -41,7 +42,7 @@ body {
 
 .card-icon {
     font-size: 40px;
-    color: #3498db;
+    color: #2c3e50;
     margin-bottom: 15px;
 }
 

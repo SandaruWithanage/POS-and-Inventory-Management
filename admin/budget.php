@@ -76,8 +76,6 @@ $conn->close();
         <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
         <li><a href="reports.php"><i class="fas fa-user-cog"></i> Reports</a></li>
       </ul>
