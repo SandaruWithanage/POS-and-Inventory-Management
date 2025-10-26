@@ -101,7 +101,7 @@ $conn->close();
     </header>
 
     <h1>Role Management</h1>
-
+    <button class="submit" type="submit">Add Role</button><br>
     <!-- Roles Table -->
     <table id="rolesTable">
       <thead>
@@ -131,21 +131,8 @@ $conn->close();
       </tbody>
     </table>
 
-    <h2>Add New Role</h2>
-    <form method="POST">
-      <div class="form-group">
-        <label for="role_name">Role Name</label>
-        <input type="text" id="role_name" name="role_name" required />
-      </div>
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required />
-      </div>
-      <button type="submit">Add Role</button>
+  
+      
     </form>
   </main>
 </div>
