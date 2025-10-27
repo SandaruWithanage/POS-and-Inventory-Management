@@ -19,19 +19,24 @@ $records_per_page = 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $records_per_page;
 
-// Fetch data from 'suppliers' table
-$stmt = $pdo->prepare("SELECT * FROM suppliers ORDER BY id ASC LIMIT :offset, :records_per_page");
+// ✅ UPDATED QUERY — match structure used by inventory system
+$stmt = $pdo->prepare("
+    SELECT id, supplierName, supplierEmail, supplierPhone, productSupplied, productQuantity
+    FROM suppliers
+    ORDER BY supplierName ASC
+    LIMIT :offset, :records_per_page
+");
 $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->bindParam(':records_per_page', $records_per_page, PDO::PARAM_INT);
 $stmt->execute();
 $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get total number of records for pagination
+// Get total number of records for pagination (unchanged)
 $stmt = $pdo->query("SELECT COUNT(*) FROM suppliers");
 $total_records = $stmt->fetchColumn();
 $total_pages = ceil($total_records / $records_per_page);
 
-// Delete record functionality
+// Delete record functionality (unchanged)
 if (isset($_GET['delete_id'])) {
     $delete_id = (int)$_GET['delete_id'];
 
@@ -48,7 +53,6 @@ if (isset($_GET['delete_id'])) {
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,7 +80,7 @@ if (isset($_GET['delete_id'])) {
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
         <li><a href="reports.php"><i class="fas fa-file-alt"></i> Reports</a></li>
       </ul>
-      <a href="admin/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
+      <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
 
     <!-- Main Content -->

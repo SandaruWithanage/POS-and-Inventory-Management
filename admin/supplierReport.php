@@ -13,73 +13,82 @@ if ($conn->connect_error) {
 }
 
 // ==========================
-// ✅ REVENUE SUMMARY
+// ✅ SUPPLIER SUMMARY
 // ==========================
-// Assuming revenue = sales_amount + income_amount - cost_amount
-$sql = "
+$summaryQuery = "
     SELECT 
-        SUM(sales_amount) AS total_sales,
-        SUM(income_amount) AS total_income,
-        SUM(cost_amount) AS total_cost
-    FROM income";
-$result = $conn->query($sql);
-if (!$result) {
-    die('Query failed: ' . $conn->error);
-}
+        COUNT(id) AS total_suppliers,
+        SUM(productQuantity) AS total_supplied_qty
+    FROM suppliers";
+$summaryResult = $conn->query($summaryQuery);
+if (!$summaryResult) die("Query failed: " . $conn->error);
+$summary = $summaryResult->fetch_assoc();
 
-$row = $result->fetch_assoc();
-$totalSales = $row['total_sales'] ?? 0;
-$totalIncome = $row['total_income'] ?? 0;
-$totalCost = $row['total_cost'] ?? 0;
-$totalRevenue = $totalSales + $totalIncome;
-$totalProfit = $totalRevenue - $totalCost;
+$totalSuppliers = $summary['total_suppliers'] ?? 0;
+$totalSuppliedQty = $summary['total_supplied_qty'] ?? 0;
+
+// Total value supplied (from inventory linked to supplier)
+$valueQuery = "
+    SELECT SUM(total_value) AS total_value
+    FROM inventory";
+$valueResult = $conn->query($valueQuery);
+$totalValue = ($valueResult->fetch_assoc())['total_value'] ?? 0;
 
 // ==========================
-// ✅ MONTHLY REVENUE TREND
+// ✅ SUPPLIER PERFORMANCE (Pie Chart)
 // ==========================
-$monthlyQuery = "
-    SELECT 
-        DATE_FORMAT(created_at, '%Y-%m') AS month,
-        SUM(sales_amount + income_amount - cost_amount) AS revenue,
-        SUM(sales_amount) AS sales,
-        SUM(income_amount) AS income,
-        SUM(cost_amount) AS cost
-    FROM income
-    GROUP BY month
-    ORDER BY month ASC";
-$monthlyResult = $conn->query($monthlyQuery);
+$supplierPerformanceQuery = "
+    SELECT s.supplierName, SUM(i.total_value) AS total_supplied_value
+    FROM suppliers s
+    LEFT JOIN inventory i ON s.id = i.supplier_id
+    GROUP BY s.supplierName
+    ORDER BY total_supplied_value DESC";
+$supplierResult = $conn->query($supplierPerformanceQuery);
 
-$months = [];
-$monthlyRevenue = [];
-$monthlySales = [];
-$monthlyIncome = [];
-$monthlyCost = [];
-if ($monthlyResult) {
-    while ($row = $monthlyResult->fetch_assoc()) {
-        $months[] = $row['month'];
-        $monthlyRevenue[] = (float)$row['revenue'];
-        $monthlySales[] = (float)$row['sales'];
-        $monthlyIncome[] = (float)$row['income'];
-        $monthlyCost[] = (float)$row['cost'];
+$supplierNames = [];
+$supplierValues = [];
+if ($supplierResult) {
+    while ($row = $supplierResult->fetch_assoc()) {
+        $supplierNames[] = $row['supplierName'] ?? 'Unknown';
+        $supplierValues[] = (float)$row['total_supplied_value'];
     }
 }
 
 // ==========================
-// ✅ CATEGORY-WISE REVENUE (from inventory)
+// ✅ SUPPLY TREND (Line Chart)
+// ==========================
+$trendQuery = "
+    SELECT DATE_FORMAT(i.created_at, '%Y-%m') AS month, SUM(i.total_value) AS total_value
+    FROM inventory i
+    GROUP BY month
+    ORDER BY month ASC";
+$trendResult = $conn->query($trendQuery);
+
+$months = [];
+$valuesOverTime = [];
+if ($trendResult) {
+    while ($row = $trendResult->fetch_assoc()) {
+        $months[] = $row['month'];
+        $valuesOverTime[] = (float)$row['total_value'];
+    }
+}
+
+// ==========================
+// ✅ SUPPLY BY CATEGORY (Bar Chart)
 // ==========================
 $categoryQuery = "
-    SELECT category, SUM(total_value) AS revenue
+    SELECT category, SUM(total_value) AS total_value
     FROM inventory
     GROUP BY category
-    ORDER BY revenue DESC";
+    ORDER BY total_value DESC";
 $categoryResult = $conn->query($categoryQuery);
 
 $categories = [];
-$categoryRevenue = [];
+$categoryValues = [];
 if ($categoryResult) {
     while ($row = $categoryResult->fetch_assoc()) {
         $categories[] = $row['category'];
-        $categoryRevenue[] = (float)$row['revenue'];
+        $categoryValues[] = (float)$row['total_value'];
     }
 }
 
@@ -91,7 +100,7 @@ $conn->close();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revenue Report</title>
+  <title>Supplier Report</title>
   <link rel="stylesheet" href="../styles/sidebar.css">
   <link rel="stylesheet" href="../styles/topbar.css">
   <link rel="stylesheet" href="../styles/dashboard.css">
@@ -100,7 +109,7 @@ $conn->close();
   <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
   <style>
     body {
-      font-family: "Poppins", sans-serif;
+      font-family: 'Poppins', sans-serif;
       background-color: #f4f7fa;
       color: #333;
     }
@@ -164,104 +173,101 @@ $conn->close();
     }
   </style>
 </head>
+
 <body>
   <aside class="sidebar">
     <ul>
       <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
       <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-      <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
+      <li><a href="suppliers.php" class="active"><i class="fas fa-truck"></i> Suppliers</a></li>
       <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
       <li><a href="financialReport.php"><i class="fas fa-chart-pie"></i> Financial Report</a></li>
-      <li><a href="revenueReport.php" class="active"><i class="fas fa-chart-line"></i> Revenue Report</a></li>
+      <li><a href="procurementReport.php"><i class="fas fa-shopping-cart"></i> Procurement Report</a></li>
     </ul>
     <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
   </aside>
 
   <main class="main-content" id="reportContent">
-    <h1>💰 Revenue Report</h1>
+    <h1>🚚 Supplier Report</h1>
 
-    <!-- Summary Section -->
+    <!-- Summary -->
     <div class="summary">
       <div class="summary-card" style="border-left:5px solid #007bff;">
-        <h3>Total Sales</h3>
-        <p>LKR <?= number_format($totalSales, 2) ?></p>
+        <h3>Total Suppliers</h3>
+        <p><?= number_format($totalSuppliers) ?></p>
       </div>
       <div class="summary-card" style="border-left:5px solid #28a745;">
-        <h3>Total Income</h3>
-        <p>LKR <?= number_format($totalIncome, 2) ?></p>
-      </div>
-      <div class="summary-card" style="border-left:5px solid #dc3545;">
-        <h3>Total Costs</h3>
-        <p>LKR <?= number_format($totalCost, 2) ?></p>
+        <h3>Total Quantity Supplied</h3>
+        <p><?= number_format($totalSuppliedQty) ?></p>
       </div>
       <div class="summary-card" style="border-left:5px solid #ffc107;">
-        <h3>Net Profit</h3>
-        <p>LKR <?= number_format($totalProfit, 2) ?></p>
+        <h3>Total Supply Value</h3>
+        <p>LKR <?= number_format($totalValue, 2) ?></p>
       </div>
     </div>
 
-    <h2>📈 Monthly Revenue Trend</h2>
-    <canvas id="monthlyRevenueChart"></canvas>
+    <h2>📦 Supplier Contribution (By Value)</h2>
+    <canvas id="supplierChart"></canvas>
 
-    <h2>🏷️ Category-wise Revenue</h2>
-    <canvas id="categoryRevenueChart"></canvas>
+    <h2>📊 Category-Wise Supply Value</h2>
+    <canvas id="categoryChart"></canvas>
 
-    <h2>📊 Revenue Composition</h2>
-    <canvas id="revenuePieChart"></canvas>
+    <h2>📅 Supply Trend Over Time</h2>
+    <canvas id="trendChart"></canvas>
 
     <button class="pdf-btn" onclick="downloadPDF()">📥 Download PDF Report</button>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
   <script>
-    // Monthly Revenue Trend
-    new Chart(document.getElementById('monthlyRevenueChart'), {
-      type: 'line',
+    // Supplier Performance Pie Chart
+    new Chart(document.getElementById('supplierChart'), {
+      type: 'pie',
       data: {
-        labels: <?= json_encode($months) ?>,
+        labels: <?= json_encode($supplierNames) ?>,
         datasets: [{
-          label: 'Revenue (LKR)',
-          data: <?= json_encode($monthlyRevenue) ?>,
-          borderColor: '#28a745',
-          backgroundColor: 'rgba(40,167,69,0.2)',
-          fill: true
+          data: <?= json_encode($supplierValues) ?>,
+          backgroundColor: ['#007bff','#28a745','#ffc107','#17a2b8','#dc3545','#6f42c1']
         }]
       },
       options: {
-        plugins: { title: { display: true, text: 'Monthly Revenue Performance' } },
-        scales: { y: { beginAtZero: true } }
+        plugins: { title: { display: true, text: 'Supplier Contribution by Value' } }
       }
     });
 
-    // Category Revenue Chart
-    new Chart(document.getElementById('categoryRevenueChart'), {
+    // Category Bar Chart
+    new Chart(document.getElementById('categoryChart'), {
       type: 'bar',
       data: {
         labels: <?= json_encode($categories) ?>,
         datasets: [{
-          label: 'Revenue (LKR)',
-          data: <?= json_encode($categoryRevenue) ?>,
-          backgroundColor: '#007bff'
+          label: 'Total Supply Value (LKR)',
+          data: <?= json_encode($categoryValues) ?>,
+          backgroundColor: '#17a2b8'
         }]
       },
       options: {
-        plugins: { title: { display: true, text: 'Revenue by Category' } },
+        plugins: { title: { display: true, text: 'Supply Value by Category' } },
         scales: { y: { beginAtZero: true } }
       }
     });
 
-    // Revenue Pie Chart
-    new Chart(document.getElementById('revenuePieChart'), {
-      type: 'pie',
+    // Supply Trend Line Chart
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
       data: {
-        labels: ['Sales', 'Income', 'Costs'],
+        labels: <?= json_encode($months) ?>,
         datasets: [{
-          data: [<?= $totalSales ?>, <?= $totalIncome ?>, <?= $totalCost ?>],
-          backgroundColor: ['#007bff', '#28a745', '#dc3545']
+          label: 'Total Supplied Value',
+          data: <?= json_encode($valuesOverTime) ?>,
+          borderColor: '#28a745',
+          backgroundColor: 'rgba(40,167,69,0.1)',
+          fill: true
         }]
       },
       options: {
-        plugins: { title: { display: true, text: 'Revenue Composition Overview' } }
+        plugins: { title: { display: true, text: 'Monthly Supply Trend' } },
+        scales: { y: { beginAtZero: true } }
       }
     });
 
@@ -283,7 +289,7 @@ $conn->close();
           pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
-        pdf.save('Revenue_Report.pdf');
+        pdf.save('Supplier_Report.pdf');
       });
     }
   </script>

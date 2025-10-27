@@ -13,73 +13,78 @@ if ($conn->connect_error) {
 }
 
 // ==========================
-// ✅ REVENUE SUMMARY
+// ✅ INVENTORY SUMMARY
 // ==========================
-// Assuming revenue = sales_amount + income_amount - cost_amount
-$sql = "
-    SELECT 
-        SUM(sales_amount) AS total_sales,
-        SUM(income_amount) AS total_income,
-        SUM(cost_amount) AS total_cost
-    FROM income";
-$result = $conn->query($sql);
-if (!$result) {
-    die('Query failed: ' . $conn->error);
+$totalQuery = "SELECT 
+                  COUNT(id) AS total_products,
+                  SUM(quantity) AS total_stock,
+                  SUM(total_value) AS total_value
+               FROM inventory";
+$totalResult = $conn->query($totalQuery);
+if (!$totalResult) {
+    die("Query failed: " . $conn->error);
 }
-
-$row = $result->fetch_assoc();
-$totalSales = $row['total_sales'] ?? 0;
-$totalIncome = $row['total_income'] ?? 0;
-$totalCost = $row['total_cost'] ?? 0;
-$totalRevenue = $totalSales + $totalIncome;
-$totalProfit = $totalRevenue - $totalCost;
+$totals = $totalResult->fetch_assoc();
+$totalProducts = $totals['total_products'] ?? 0;
+$totalStock = $totals['total_stock'] ?? 0;
+$totalValue = $totals['total_value'] ?? 0;
 
 // ==========================
-// ✅ MONTHLY REVENUE TREND
+// ✅ CATEGORY DISTRIBUTION
 // ==========================
-$monthlyQuery = "
-    SELECT 
-        DATE_FORMAT(created_at, '%Y-%m') AS month,
-        SUM(sales_amount + income_amount - cost_amount) AS revenue,
-        SUM(sales_amount) AS sales,
-        SUM(income_amount) AS income,
-        SUM(cost_amount) AS cost
-    FROM income
-    GROUP BY month
-    ORDER BY month ASC";
-$monthlyResult = $conn->query($monthlyQuery);
+$categoryQuery = "
+    SELECT category, SUM(quantity) AS total_qty, SUM(total_value) AS total_val
+    FROM inventory
+    GROUP BY category
+    ORDER BY total_val DESC";
+$categoryResult = $conn->query($categoryQuery);
 
-$months = [];
-$monthlyRevenue = [];
-$monthlySales = [];
-$monthlyIncome = [];
-$monthlyCost = [];
-if ($monthlyResult) {
-    while ($row = $monthlyResult->fetch_assoc()) {
-        $months[] = $row['month'];
-        $monthlyRevenue[] = (float)$row['revenue'];
-        $monthlySales[] = (float)$row['sales'];
-        $monthlyIncome[] = (float)$row['income'];
-        $monthlyCost[] = (float)$row['cost'];
+$categories = [];
+$categoryQty = [];
+$categoryVal = [];
+if ($categoryResult) {
+    while ($row = $categoryResult->fetch_assoc()) {
+        $categories[] = $row['category'];
+        $categoryQty[] = (int)$row['total_qty'];
+        $categoryVal[] = (float)$row['total_val'];
     }
 }
 
 // ==========================
-// ✅ CATEGORY-WISE REVENUE (from inventory)
+// ✅ STOCK STATUS DISTRIBUTION
 // ==========================
-$categoryQuery = "
-    SELECT category, SUM(total_value) AS revenue
+$statusQuery = "
+    SELECT stock_status, COUNT(*) AS total
     FROM inventory
-    GROUP BY category
-    ORDER BY revenue DESC";
-$categoryResult = $conn->query($categoryQuery);
+    GROUP BY stock_status";
+$statusResult = $conn->query($statusQuery);
 
-$categories = [];
-$categoryRevenue = [];
-if ($categoryResult) {
-    while ($row = $categoryResult->fetch_assoc()) {
-        $categories[] = $row['category'];
-        $categoryRevenue[] = (float)$row['revenue'];
+$stockStatuses = [];
+$statusCounts = [];
+if ($statusResult) {
+    while ($row = $statusResult->fetch_assoc()) {
+        $stockStatuses[] = ucfirst($row['stock_status']);
+        $statusCounts[] = (int)$row['total'];
+    }
+}
+
+// ==========================
+// ✅ SUPPLIER WISE VALUE
+// ==========================
+$supplierQuery = "
+    SELECT s.supplierName, SUM(i.total_value) AS total_value
+    FROM inventory i
+    LEFT JOIN suppliers s ON i.supplier_id = s.id
+    GROUP BY s.supplierName
+    ORDER BY total_value DESC";
+$supplierResult = $conn->query($supplierQuery);
+
+$supplierNames = [];
+$supplierValues = [];
+if ($supplierResult) {
+    while ($row = $supplierResult->fetch_assoc()) {
+        $supplierNames[] = $row['supplierName'] ?? "Unknown";
+        $supplierValues[] = (float)$row['total_value'];
     }
 }
 
@@ -91,7 +96,7 @@ $conn->close();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revenue Report</title>
+  <title>Product (Inventory) Report</title>
   <link rel="stylesheet" href="../styles/sidebar.css">
   <link rel="stylesheet" href="../styles/topbar.css">
   <link rel="stylesheet" href="../styles/dashboard.css">
@@ -100,7 +105,7 @@ $conn->close();
   <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
   <style>
     body {
-      font-family: "Poppins", sans-serif;
+      font-family: 'Poppins', sans-serif;
       background-color: #f4f7fa;
       color: #333;
     }
@@ -164,104 +169,123 @@ $conn->close();
     }
   </style>
 </head>
+
 <body>
   <aside class="sidebar">
     <ul>
       <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-      <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
+      <li><a href="inventory.php" class="active"><i class="fas fa-boxes"></i> Inventory</a></li>
       <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
       <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
+      <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+      <li><a href="income.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+      <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
       <li><a href="financialReport.php"><i class="fas fa-chart-pie"></i> Financial Report</a></li>
-      <li><a href="revenueReport.php" class="active"><i class="fas fa-chart-line"></i> Revenue Report</a></li>
     </ul>
     <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
   </aside>
 
   <main class="main-content" id="reportContent">
-    <h1>💰 Revenue Report</h1>
+    <h1>📦 Product (Inventory) Report</h1>
 
-    <!-- Summary Section -->
+    <!-- Summary Cards -->
     <div class="summary">
       <div class="summary-card" style="border-left:5px solid #007bff;">
-        <h3>Total Sales</h3>
-        <p>LKR <?= number_format($totalSales, 2) ?></p>
+        <h3>Total Products</h3>
+        <p><?= number_format($totalProducts) ?></p>
       </div>
       <div class="summary-card" style="border-left:5px solid #28a745;">
-        <h3>Total Income</h3>
-        <p>LKR <?= number_format($totalIncome, 2) ?></p>
-      </div>
-      <div class="summary-card" style="border-left:5px solid #dc3545;">
-        <h3>Total Costs</h3>
-        <p>LKR <?= number_format($totalCost, 2) ?></p>
+        <h3>Total Stock Quantity</h3>
+        <p><?= number_format($totalStock) ?></p>
       </div>
       <div class="summary-card" style="border-left:5px solid #ffc107;">
-        <h3>Net Profit</h3>
-        <p>LKR <?= number_format($totalProfit, 2) ?></p>
+        <h3>Total Stock Value</h3>
+        <p>LKR <?= number_format($totalValue, 2) ?></p>
       </div>
     </div>
 
-    <h2>📈 Monthly Revenue Trend</h2>
-    <canvas id="monthlyRevenueChart"></canvas>
+    <h2>📊 Category-Wise Inventory Value</h2>
+    <canvas id="categoryValueChart"></canvas>
 
-    <h2>🏷️ Category-wise Revenue</h2>
-    <canvas id="categoryRevenueChart"></canvas>
+    <h2>📈 Category-Wise Quantity</h2>
+    <canvas id="categoryQtyChart"></canvas>
 
-    <h2>📊 Revenue Composition</h2>
-    <canvas id="revenuePieChart"></canvas>
+    <h2>🏭 Supplier Contribution</h2>
+    <canvas id="supplierChart"></canvas>
+
+    <h2>📦 Stock Status Overview</h2>
+    <canvas id="stockStatusChart"></canvas>
 
     <button class="pdf-btn" onclick="downloadPDF()">📥 Download PDF Report</button>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
   <script>
-    // Monthly Revenue Trend
-    new Chart(document.getElementById('monthlyRevenueChart'), {
-      type: 'line',
-      data: {
-        labels: <?= json_encode($months) ?>,
-        datasets: [{
-          label: 'Revenue (LKR)',
-          data: <?= json_encode($monthlyRevenue) ?>,
-          borderColor: '#28a745',
-          backgroundColor: 'rgba(40,167,69,0.2)',
-          fill: true
-        }]
-      },
-      options: {
-        plugins: { title: { display: true, text: 'Monthly Revenue Performance' } },
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-    // Category Revenue Chart
-    new Chart(document.getElementById('categoryRevenueChart'), {
+    // Category Value Chart
+    new Chart(document.getElementById('categoryValueChart'), {
       type: 'bar',
       data: {
         labels: <?= json_encode($categories) ?>,
         datasets: [{
-          label: 'Revenue (LKR)',
-          data: <?= json_encode($categoryRevenue) ?>,
+          label: 'Category Stock Value (LKR)',
+          data: <?= json_encode($categoryVal) ?>,
           backgroundColor: '#007bff'
         }]
       },
       options: {
-        plugins: { title: { display: true, text: 'Revenue by Category' } },
+        responsive: true,
+        plugins: { title: { display: true, text: 'Inventory Value by Category' } },
         scales: { y: { beginAtZero: true } }
       }
     });
 
-    // Revenue Pie Chart
-    new Chart(document.getElementById('revenuePieChart'), {
-      type: 'pie',
+    // Category Quantity Chart
+    new Chart(document.getElementById('categoryQtyChart'), {
+      type: 'line',
       data: {
-        labels: ['Sales', 'Income', 'Costs'],
+        labels: <?= json_encode($categories) ?>,
         datasets: [{
-          data: [<?= $totalSales ?>, <?= $totalIncome ?>, <?= $totalCost ?>],
-          backgroundColor: ['#007bff', '#28a745', '#dc3545']
+          label: 'Total Quantity',
+          data: <?= json_encode($categoryQty) ?>,
+          borderColor: '#28a745',
+          fill: true,
+          backgroundColor: 'rgba(40,167,69,0.1)'
         }]
       },
       options: {
-        plugins: { title: { display: true, text: 'Revenue Composition Overview' } }
+        responsive: true,
+        plugins: { title: { display: true, text: 'Stock Quantity by Category' } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // Supplier Contribution Chart
+    new Chart(document.getElementById('supplierChart'), {
+      type: 'pie',
+      data: {
+        labels: <?= json_encode($supplierNames) ?>,
+        datasets: [{
+          data: <?= json_encode($supplierValues) ?>,
+          backgroundColor: ['#007bff', '#28a745', '#ffc107', '#17a2b8', '#dc3545', '#6f42c1']
+        }]
+      },
+      options: {
+        plugins: { title: { display: true, text: 'Supplier-Wise Inventory Value' } }
+      }
+    });
+
+    // Stock Status Chart
+    new Chart(document.getElementById('stockStatusChart'), {
+      type: 'doughnut',
+      data: {
+        labels: <?= json_encode($stockStatuses) ?>,
+        datasets: [{
+          data: <?= json_encode($statusCounts) ?>,
+          backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+        }]
+      },
+      options: {
+        plugins: { title: { display: true, text: 'Stock Status Overview' } }
       }
     });
 
@@ -283,7 +307,7 @@ $conn->close();
           pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
-        pdf.save('Revenue_Report.pdf');
+        pdf.save('Product_Inventory_Report.pdf');
       });
     }
   </script>

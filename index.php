@@ -43,13 +43,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 case "admin":
                     header("Location: dashboard.php"); break;
                 case "financemanager":
-                    header("Location: dashboard_finance.php"); break;
+                    header("Location: finance_manager_dashboard.php"); break;
                 case "procurementmanager":
-                    header("Location: dashboard_procurement.php"); break;
+                    header("Location: procurement_manager_dashboard.php"); break;
                 case "inventorymanager":
-                    header("Location: dashboard_inventory.php"); break;
+                    header("Location: inventory_manager_dashboard.php"); break;
                 case "cashier":
-                    header("Location: dashboard_cashier.php"); break;
+                    header("Location: CashierDashboard.php"); break;
                 default:
                     echo "<p>No dashboard found for this role</p>";
             }
@@ -103,5 +103,12 @@ $conn->close();
             </form>
         </div>
     </div>
+    <script>
+document.getElementById('loginForm').addEventListener('submit', function (e) {
+    // Add fade-out transition
+    document.body.classList.add('fade-out');
+});
+</script>
+
 </body>
 </html>

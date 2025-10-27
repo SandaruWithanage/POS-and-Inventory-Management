@@ -1,5 +1,7 @@
 <?php
+// ============================
 // Database connection
+// ============================
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -10,22 +12,47 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle Add to Cart
+// ============================
+// Handle Add to Cart (AJAX)
+// ============================
 if (isset($_POST['add_to_cart'])) {
     $barcode = $_POST['barcode'];
-    $sql = "SELECT * FROM inventory WHERE barcode_no = '$barcode'";
+    $sql = "SELECT * FROM inventory WHERE barcode_no = '$barcode' AND quantity > 0";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         $product = $result->fetch_assoc();
         echo json_encode($product);
     } else {
-        echo json_encode(["error" => "Product not found"]);
+        echo json_encode(["error" => "Product not found or out of stock"]);
     }
     exit;
 }
-?>
 
+// ============================
+// Fetch Customers (for selection)
+// ============================
+$customers = [];
+$customerQuery = "SELECT id, customerName, customerEmail FROM customers ORDER BY customerName ASC";
+$result = $conn->query($customerQuery);
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $customers[] = $row;
+    }
+}
+
+// ============================
+// Fetch Products (for search dropdown)
+// ============================
+$products = [];
+$productQuery = "SELECT product_name, barcode_no FROM inventory WHERE quantity > 0 ORDER BY product_name ASC";
+$result = $conn->query($productQuery);
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $products[] = $row;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,191 +64,248 @@ if (isset($_POST['add_to_cart'])) {
 <body>
     <h1>Sarasavi Enterprises</h1>
 
+    <!-- Top Controls -->
+    <div class="top-actions">
+        <button onclick="window.location.href='customers.php'" class="add-customer-btn">➕ Add Customer</button>
+
+        <select id="customerSelect">
+            <option value="">Select Customer</option>
+            <?php foreach ($customers as $c): ?>
+                <option value="<?= htmlspecialchars($c['id']) ?>"><?= htmlspecialchars($c['customerName']) ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <label>
+            <input type="checkbox" id="royaltyCheck"> Royalty Customer (5% Discount)
+        </label>
+    </div>
+
+    <!-- Product Search and Barcode -->
     <div class="barcode-search">
+        <select id="productSelect">
+            <option value="">-- Search or Choose Product --</option>
+            <?php foreach ($products as $p): ?>
+                <option value="<?= htmlspecialchars($p['barcode_no']) ?>">
+                    <?= htmlspecialchars($p['product_name']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
         <input type="text" id="barcode" placeholder="Enter barcode">
         <button id="add_to_cart">Add to Cart</button>
     </div>
 
+    <!-- Cart -->
     <div class="cart-section">
         <table id="cart">
             <thead>
                 <tr>
                     <th>Product</th>
-                    <th>Price</th>
+                    <th>Price (LKR)</th>
                     <th>Inventory</th>
                     <th>Quantity</th>
-                    <th>Total</th>
+                    <th>Product Discount (%)</th>
+                    <th>Total (LKR)</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Cart items will be dynamically added here -->
-            </tbody>
+            <tbody></tbody>
         </table>
 
         <div class="cart-summary">
-            <h3>Total: <span id="total">0.00</span></h3>
-            <button id="print_bill">Print Bill</button>
+            <h3>Subtotal: <span id="subtotal">0.00</span></h3>
+            <h3>Discount: <span id="discount">0.00</span></h3>
+            <h3><b>Grand Total: <span id="total">0.00</span></b></h3>
+            <button id="print_bill">🧾 Print Bill</button>
         </div>
     </div>
 
-    <script>
-        const cart = [];
+<script>
+    const cart = [];
+    let royaltyDiscount = 0;
 
-        document.getElementById('add_to_cart').addEventListener('click', () => {
-            const barcode = document.getElementById('barcode').value;
-            fetch('', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `add_to_cart=true&barcode=${barcode}`
-            })
-            .then(response => response.json())
-            .then(product => {
-                if (product.error) {
-                    alert(product.error);
-                    return;
-                }
+    // Link product dropdown to barcode field
+    document.getElementById('productSelect').addEventListener('change', function() {
+        const barcode = this.value;
+        document.getElementById('barcode').value = barcode;
+    });
 
-                // Add product to cart
-                const existingItem = cart.find(item => item.barcode === product.barcode_no);
-                if (existingItem) {
-                    alert('Product already in cart');
-                    return;
-                }
+    document.getElementById('royaltyCheck').addEventListener('change', function() {
+        royaltyDiscount = this.checked ? 5 : 0;
+        renderCart();
+    });
 
-                const cartItem = {
-                    barcode: product.barcode_no,
-                    name: product.product_name,
-                    price: parseFloat(product.selling_price),
-                    inventory: product.quantity,
-                    quantity: 1,
-                    total: parseFloat(product.selling_price)
-                };
-                cart.push(cartItem);
-                renderCart();
-
-                // Clear barcode input after adding to cart
-                document.getElementById('barcode').value = '';
-            });
-        });
-
-        function renderCart() {
-            const tbody = document.querySelector('#cart tbody');
-            tbody.innerHTML = '';
-            let total = 0;
-
-            cart.forEach((item, index) => {
-                const tr = document.createElement('tr');
-
-                tr.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>${item.price.toFixed(2)}</td>
-                    <td>${item.inventory}</td>
-                    <td>
-                        <input type="number" value="${item.quantity}" min="1" max="${item.inventory}" data-index="${index}" class="quantity-input">
-                    </td>
-                    <td>${item.total.toFixed(2)}</td>
-                    <td>
-                        <button class="delete-btn" data-index="${index}">Delete</button>
-                    </td>
-                `;
-
-                tbody.appendChild(tr);
-                total += item.total;
-            });
-
-            document.getElementById('total').textContent = total.toFixed(2);
-
-            // Attach event listeners to delete buttons and quantity inputs
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', deleteItem);
-            });
-
-            document.querySelectorAll('.quantity-input').forEach(input => {
-                input.addEventListener('input', updateQuantity);
-            });
+    document.getElementById('add_to_cart').addEventListener('click', () => {
+        const barcode = document.getElementById('barcode').value.trim();
+        if (!barcode) {
+            alert('Please enter or select a product.');
+            return;
         }
 
-        function deleteItem(event) {
-            const index = event.target.dataset.index;
-            cart.splice(index, 1);
-            renderCart();
-        }
-
-        function updateQuantity(event) {
-            const index = event.target.dataset.index;
-            const quantity = parseInt(event.target.value);
-            const item = cart[index];
-
-            if (quantity > item.inventory) {
-                alert('Exceeds available stock');
-                event.target.value = item.inventory;
+        fetch('', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `add_to_cart=true&barcode=${barcode}`
+        })
+        .then(response => response.json())
+        .then(product => {
+            if (product.error) {
+                alert(product.error);
                 return;
             }
 
-            item.quantity = quantity;
-            item.total = item.price * quantity;
+            const existingItem = cart.find(item => item.barcode === product.barcode_no);
+            if (existingItem) {
+                alert('Product already in cart.');
+                return;
+            }
+
+            const cartItem = {
+                barcode: product.barcode_no,
+                name: product.product_name,
+                price: parseFloat(product.selling_price),
+                inventory: product.quantity,
+                quantity: 1,
+                discount: 0,
+                total: parseFloat(product.selling_price)
+            };
+            cart.push(cartItem);
             renderCart();
-        }
 
-        function generateReceipt() {
-            const billNo = Math.floor(Math.random() * 100000); // Generate random bill number
-            const dateTime = new Date().toLocaleString(); // Get current date and time
+            document.getElementById('barcode').value = '';
+            document.getElementById('productSelect').value = '';
+        });
+    });
 
-            let receiptContent = `
-                <div style="font-family: Arial; font-size: 12px; width: 240px;">
-                    <h3 style="text-align: center;">SARASAVI ENTERPRISES</h3>
-                    <p style="text-align: center;">215/3, Main Street, Dompe, Sri Lanka</p>
-                    <p style="text-align: center;">Date: ${dateTime}</p>
-                    <p style="text-align: center;">Bill No: ${billNo}</p>
-                    <hr>
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr>
-                                <th style="text-align: left;">Item</th>
-                                <th style="text-align: right;">Qty</th>
-                                <th style="text-align: right;">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+    function renderCart() {
+        const tbody = document.querySelector('#cart tbody');
+        tbody.innerHTML = '';
+        let subtotal = 0;
+
+        cart.forEach((item, index) => {
+            const itemTotal = item.price * item.quantity * (1 - item.discount / 100);
+            subtotal += itemTotal;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.price.toFixed(2)}</td>
+                <td>${item.inventory}</td>
+                <td><input type="number" value="${item.quantity}" min="1" max="${item.inventory}" data-index="${index}" class="quantity-input"></td>
+                <td><input type="number" value="${item.discount}" min="0" max="100" data-index="${index}" class="discount-input"></td>
+                <td>${itemTotal.toFixed(2)}</td>
+                <td><button class="delete-btn" data-index="${index}">Delete</button></td>
             `;
+            tbody.appendChild(tr);
+        });
 
-            let total = 0;
-            cart.forEach((item) => {
-                const itemTotal = item.price * item.quantity;
-                total += itemTotal;
+        const royaltyAmount = subtotal * (royaltyDiscount / 100);
+        const grandTotal = subtotal - royaltyAmount;
 
-                receiptContent += `
-                    <tr>
-                        <td style="text-align: left;">${item.name}</td>
-                        <td style="text-align: right;">${item.quantity}</td>
-                        <td style="text-align: right;">LKR ${itemTotal.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
+        document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+        document.getElementById('discount').textContent = royaltyAmount.toFixed(2);
+        document.getElementById('total').textContent = grandTotal.toFixed(2);
 
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', deleteItem));
+        document.querySelectorAll('.quantity-input').forEach(inp => inp.addEventListener('input', updateQuantity));
+        document.querySelectorAll('.discount-input').forEach(inp => inp.addEventListener('input', updateDiscount));
+    }
+
+    function deleteItem(e) {
+        const index = e.target.dataset.index;
+        cart.splice(index, 1);
+        renderCart();
+    }
+
+    function updateQuantity(e) {
+        const index = e.target.dataset.index;
+        const quantity = parseInt(e.target.value);
+        const item = cart[index];
+        if (quantity > item.inventory) {
+            alert('Exceeds available stock');
+            e.target.value = item.inventory;
+            return;
+        }
+        item.quantity = quantity;
+        renderCart();
+    }
+
+    function updateDiscount(e) {
+        const index = e.target.dataset.index;
+        const discount = parseFloat(e.target.value);
+        const item = cart[index];
+        if (discount < 0 || discount > 100) {
+            alert('Invalid discount value');
+            e.target.value = item.discount;
+            return;
+        }
+        item.discount = discount;
+        renderCart();
+    }
+
+    function generateReceipt() {
+        const billNo = Math.floor(Math.random() * 100000);
+        const dateTime = new Date().toLocaleString();
+        const customer = document.getElementById('customerSelect').selectedOptions[0]?.text || "Guest";
+        const isRoyalty = document.getElementById('royaltyCheck').checked ? "Yes" : "No";
+
+        let receiptContent = `
+            <div style="font-family: Arial; font-size: 12px; width: 240px;">
+                <h3 style="text-align: center;">SARASAVI ENTERPRISES</h3>
+                <p style="text-align: center;">215/3, Main Street, Dompe, Sri Lanka</p>
+                <p style="text-align: center;">Date: ${dateTime}</p>
+                <p style="text-align: center;">Bill No: ${billNo}</p>
+                <p style="text-align: center;">Customer: ${customer}</p>
+                <p style="text-align: center;">Royalty: ${isRoyalty}</p>
+                <hr>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead><tr><th style="text-align:left;">Item</th><th style="text-align:right;">Qty</th><th style="text-align:right;">Total</th></tr></thead>
+                    <tbody>
+        `;
+
+        let subtotal = 0;
+        cart.forEach((item) => {
+            const itemTotal = item.price * item.quantity * (1 - item.discount / 100);
+            subtotal += itemTotal;
             receiptContent += `
-                        </tbody>
-                    </table>
-                    <hr>
-                    <p style="text-align: right; font-weight: bold;">Total: LKR ${total.toFixed(2)}</p>
-                    <p style="text-align: center;">Visit us again!</p>
-                </div>
+                <tr>
+                    <td>${item.name}</td>
+                    <td style="text-align:right;">${item.quantity}</td>
+                    <td style="text-align:right;">LKR ${itemTotal.toFixed(2)}</td>
+                </tr>
             `;
+        });
 
-            return receiptContent;
+        const royaltyAmt = subtotal * (royaltyDiscount / 100);
+        const grandTotal = subtotal - royaltyAmt;
+
+        receiptContent += `
+                    </tbody>
+                </table>
+                <hr>
+                <p style="text-align:right;">Subtotal: LKR ${subtotal.toFixed(2)}</p>
+                <p style="text-align:right;">Royalty Discount: LKR ${royaltyAmt.toFixed(2)}</p>
+                <p style="text-align:right;font-weight:bold;">Grand Total: LKR ${grandTotal.toFixed(2)}</p>
+                <p style="text-align:center;">Thank you! Visit us again.</p>
+            </div>
+        `;
+        return receiptContent;
+    }
+
+    function printBill() {
+        if (cart.length === 0) {
+            alert('Cart is empty!');
+            return;
         }
+        const receiptWindow = window.open("", "Print Receipt", "width=300,height=600");
+        receiptWindow.document.write(generateReceipt());
+        receiptWindow.document.close();
+        receiptWindow.focus();
+        receiptWindow.print();
+        setTimeout(() => receiptWindow.close(), 1000);
+    }
 
-        function printBill() {
-            const receiptWindow = window.open("", "Print Receipt", "width=300,height=600");
-            receiptWindow.document.write(generateReceipt());
-            receiptWindow.document.close();
-            receiptWindow.focus();
-            receiptWindow.print();
-            setTimeout(() => receiptWindow.close(), 1000); // Auto-close after 1 second
-        }
-
-        document.getElementById('print_bill').addEventListener('click', printBill);
-    </script>
+    document.getElementById('print_bill').addEventListener('click', printBill);
+</script>
 </body>
 </html>

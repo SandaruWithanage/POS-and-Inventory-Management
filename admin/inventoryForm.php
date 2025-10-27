@@ -40,11 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stockStatus = trim($_POST['stockStatus']);
 
     // ✅ Barcode prefix based on category
-    $prefix = preg_match('/(tv|laptop|phone|camera|refrigerator|microwave|speaker|headphone|electronic)/i', $productCategory)
-        ? 'ELEC'
-        : (preg_match('/(sofa|table|chair|bed|cabinet|wardrobe|furniture|desk)/i', $productCategory) ? 'FURN' : 'ITEM');
+$prefix = preg_match('/(Televisions|Laptops|Phones|Cameras|Refrigerators|Microwaves|Speakers|Headphones)/i', $productCategory)
+    ? 'ELEC'
+    : (preg_match('/(Sofas|Beds|Tables|Chairs|Cabinets|Wardrobes|Desks)/i', $productCategory) ? 'FURN' : 'ITEM');
 
-    $barcodeNo = $prefix . date('Ymd') . sprintf('%04d', rand(1, 9999));
+// ✅ Generate truly unique barcode (prefix + date + unique ID)
+$barcodeNo = $prefix . date('YmdHis') . strtoupper(substr(uniqid(), -4));
+
 
     // ✅ Handle image upload
     $imagePath = '';
@@ -63,25 +65,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $totalValue = $productQuantity * $unitPrice;
         $timestamp = date('Y-m-d H:i:s');
 
-        $sql = "INSERT INTO inventory 
-                (product_name, barcode_no, category, supplier_id, quantity, unit_price, selling_price, total_value, stock_status, product_image, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param(
-            "sssiiddssss",
-            $productName,
-            $barcodeNo,
-            $productCategory,
-            $supplierId,
-            $productQuantity,
-            $unitPrice,
-            $sellingPrice,
-            $totalValue,
-            $stockStatus,
-            $imagePath,
-            $timestamp,
-            $timestamp
-        );
+       $sql = "INSERT INTO inventory 
+        (product_name, barcode_no, category, supplier_id, quantity, unit_price, selling_price, total_value, stock_status, product_image, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param(
+    "sssiidddssss",
+    $productName,      // s
+    $barcodeNo,        // s
+    $productCategory,  // s
+    $supplierId,       // i
+    $productQuantity,  // i
+    $unitPrice,        // d
+    $sellingPrice,     // d
+    $totalValue,       // d
+    $stockStatus,      // s
+    $imagePath,        // s
+    $timestamp,        // s
+    $timestamp         // s
+);
+
         $stmt->execute();
         $stmt->close();
         header("Location: inventory.php");
@@ -155,8 +158,8 @@ $conn->close();
             <?php foreach ($suppliers as $supplier): ?>
               <option 
                 value="<?= $supplier['id']; ?>"
-                data-products='<?= json_encode(explode(",", $supplier["productSupplied"])); ?>'
-                data-quantities='<?= json_encode(explode(",", $supplier["productQuantity"] ?? "")); ?>'>
+                data-product="<?= htmlspecialchars($supplier['productSupplied']); ?>"
+                data-quantity="<?= htmlspecialchars($supplier['productQuantity']); ?>">
                 <?= htmlspecialchars($supplier['supplierName']); ?>
               </option>
             <?php endforeach; ?>
@@ -165,18 +168,36 @@ $conn->close();
 
         <!-- Category -->
         <div class="form-group">
-          <label for="productCategory">Category</label>
+          <label for="productCategory">Product Category</label>
           <select id="productCategory" name="productCategory" required>
             <option value="">-- Select Category --</option>
+            <optgroup label="📺 Electronics">
+              <option value="Televisions">Televisions</option>
+              <option value="Laptops">Laptops</option>
+              <option value="Mobile Phones">Mobile Phones</option>
+              <option value="Refrigerators">Refrigerators</option>
+              <option value="Washing Machines">Washing Machines</option>
+              <option value="Microwaves">Microwaves</option>
+              <option value="Speakers">Speakers</option>
+              <option value="Headphones">Headphones</option>
+              <option value="Cameras">Cameras</option>
+            </optgroup>
+            <optgroup label="🪑 Furniture">
+              <option value="Sofas">Sofas</option>
+              <option value="Beds">Beds</option>
+              <option value="Dining Tables">Dining Tables</option>
+              <option value="Chairs">Chairs</option>
+              <option value="Cabinets">Cabinets</option>
+              <option value="Wardrobes">Wardrobes</option>
+              <option value="Office Desks">Office Desks</option>
+            </optgroup>
           </select>
         </div>
 
-        <!-- Product -->
+        <!-- Product Name -->
         <div class="form-group">
-          <label for="productName">Product</label>
-          <select id="productName" name="productName" required>
-            <option value="">-- Select Product --</option>
-          </select>
+          <label for="productName">Product Name</label>
+          <input type="text" id="productName" name="productName" readonly required>
         </div>
 
         <!-- Quantity -->
@@ -218,52 +239,27 @@ $conn->close();
   </div>
 
   <script>
-  // When supplier changes → update categories
+  // When supplier changes, auto-fill product name, quantity, and select category
   document.getElementById('supplierId').addEventListener('change', function() {
       const selected = this.options[this.selectedIndex];
-      const products = JSON.parse(selected.getAttribute('data-products') || '[]');
-      const quantities = JSON.parse(selected.getAttribute('data-quantities') || '[]');
-      const categories = [...new Set(products.map(p => p.split(':')[0].trim()))];
+      const productName = selected.getAttribute('data-product') || '';
+      const quantity = selected.getAttribute('data-quantity') || 0;
 
+      document.getElementById('productName').value = productName;
+      document.getElementById('productQuantity').value = quantity;
+
+      // Automatically set category dropdown if product matches
       const categorySelect = document.getElementById('productCategory');
-      categorySelect.innerHTML = '<option value="">-- Select Category --</option>';
-      categories.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c;
-          opt.textContent = c;
-          categorySelect.appendChild(opt);
-      });
-
-      document.getElementById('productName').innerHTML = '<option value="">-- Select Product --</option>';
-      document.getElementById('productQuantity').value = '';
-  });
-
-  // When category changes → show only products in that category
-  document.getElementById('productCategory').addEventListener('change', function() {
-      const supplier = document.getElementById('supplierId');
-      const selected = supplier.options[supplier.selectedIndex];
-      const products = JSON.parse(selected.getAttribute('data-products') || '[]');
-      const quantities = JSON.parse(selected.getAttribute('data-quantities') || '[]');
-      const category = this.value;
-      const productSelect = document.getElementById('productName');
-      productSelect.innerHTML = '<option value="">-- Select Product --</option>';
-
-      products.forEach((p, i) => {
-          const [cat, name] = p.split(':').map(x => x.trim());
-          if (cat.toLowerCase() === category.toLowerCase()) {
-              const opt = document.createElement('option');
-              opt.value = name;
-              opt.textContent = name;
-              opt.setAttribute('data-qty', quantities[i] || 0);
-              productSelect.appendChild(opt);
+      let matched = false;
+      for (let i = 0; i < categorySelect.options.length; i++) {
+          const opt = categorySelect.options[i];
+          if (productName.toLowerCase().includes(opt.value.toLowerCase())) {
+              categorySelect.value = opt.value;
+              matched = true;
+              break;
           }
-      });
-  });
-
-  // When product changes → set quantity automatically
-  document.getElementById('productName').addEventListener('change', function() {
-      const qty = this.options[this.selectedIndex].getAttribute('data-qty');
-      document.getElementById('productQuantity').value = qty || 0;
+      }
+      if (!matched) categorySelect.value = '';
   });
   </script>
 </body>

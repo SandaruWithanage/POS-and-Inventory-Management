@@ -1,7 +1,5 @@
 <?php
-// ==========================
-// DATABASE CONNECTION
-// ==========================
+// Database connection
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -12,75 +10,74 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// ==========================
-// ✅ REVENUE SUMMARY
-// ==========================
-// Assuming revenue = sales_amount + income_amount - cost_amount
-$sql = "
-    SELECT 
-        SUM(sales_amount) AS total_sales,
-        SUM(income_amount) AS total_income,
-        SUM(cost_amount) AS total_cost
-    FROM income";
+// =========================
+// ✅ Overall Totals
+// =========================
+$sql = "SELECT 
+            SUM(income_amount) AS total_income,
+            SUM(cost_amount) AS total_cost,
+            SUM(sales_amount) AS total_sales
+        FROM income";
 $result = $conn->query($sql);
-if (!$result) {
-    die('Query failed: ' . $conn->error);
-}
+$totals = $result->fetch_assoc();
 
-$row = $result->fetch_assoc();
-$totalSales = $row['total_sales'] ?? 0;
-$totalIncome = $row['total_income'] ?? 0;
-$totalCost = $row['total_cost'] ?? 0;
-$totalRevenue = $totalSales + $totalIncome;
-$totalProfit = $totalRevenue - $totalCost;
+$totalIncome = $totals['total_income'] ?? 0;
+$totalCost   = $totals['total_cost'] ?? 0;
+$totalSales  = $totals['total_sales'] ?? 0;
+$totalProfit = $totalSales + $totalIncome - $totalCost;
 
-// ==========================
-// ✅ MONTHLY REVENUE TREND
-// ==========================
+// =========================
+// ✅ Monthly Totals
+// =========================
 $monthlyQuery = "
     SELECT 
         DATE_FORMAT(created_at, '%Y-%m') AS month,
-        SUM(sales_amount + income_amount - cost_amount) AS revenue,
-        SUM(sales_amount) AS sales,
         SUM(income_amount) AS income,
-        SUM(cost_amount) AS cost
+        SUM(cost_amount) AS cost,
+        SUM(sales_amount) AS sales
     FROM income
     GROUP BY month
-    ORDER BY month ASC";
+    ORDER BY month ASC
+";
 $monthlyResult = $conn->query($monthlyQuery);
 
 $months = [];
-$monthlyRevenue = [];
-$monthlySales = [];
 $monthlyIncome = [];
 $monthlyCost = [];
-if ($monthlyResult) {
-    while ($row = $monthlyResult->fetch_assoc()) {
-        $months[] = $row['month'];
-        $monthlyRevenue[] = (float)$row['revenue'];
-        $monthlySales[] = (float)$row['sales'];
-        $monthlyIncome[] = (float)$row['income'];
-        $monthlyCost[] = (float)$row['cost'];
-    }
+$monthlySales = [];
+
+while ($row = $monthlyResult->fetch_assoc()) {
+    $months[] = $row['month'];
+    $monthlyIncome[] = (float)$row['income'];
+    $monthlyCost[] = (float)$row['cost'];
+    $monthlySales[] = (float)$row['sales'];
 }
 
-// ==========================
-// ✅ CATEGORY-WISE REVENUE (from inventory)
-// ==========================
-$categoryQuery = "
-    SELECT category, SUM(total_value) AS revenue
-    FROM inventory
-    GROUP BY category
-    ORDER BY revenue DESC";
-$categoryResult = $conn->query($categoryQuery);
+// =========================
+// ✅ Annual Totals
+// =========================
+$annualQuery = "
+    SELECT 
+        YEAR(created_at) AS year,
+        SUM(income_amount) AS income,
+        SUM(cost_amount) AS cost,
+        SUM(sales_amount) AS sales
+    FROM income
+    GROUP BY year
+    ORDER BY year ASC
+";
+$annualResult = $conn->query($annualQuery);
 
-$categories = [];
-$categoryRevenue = [];
-if ($categoryResult) {
-    while ($row = $categoryResult->fetch_assoc()) {
-        $categories[] = $row['category'];
-        $categoryRevenue[] = (float)$row['revenue'];
-    }
+$years = [];
+$annualIncome = [];
+$annualCost = [];
+$annualSales = [];
+
+while ($row = $annualResult->fetch_assoc()) {
+    $years[] = $row['year'];
+    $annualIncome[] = (float)$row['income'];
+    $annualCost[] = (float)$row['cost'];
+    $annualSales[] = (float)$row['sales'];
 }
 
 $conn->close();
@@ -91,7 +88,7 @@ $conn->close();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revenue Report</title>
+  <title>Financial Report</title>
   <link rel="stylesheet" href="../styles/sidebar.css">
   <link rel="stylesheet" href="../styles/topbar.css">
   <link rel="stylesheet" href="../styles/dashboard.css">
@@ -171,24 +168,26 @@ $conn->close();
       <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
       <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
       <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
-      <li><a href="financialReport.php"><i class="fas fa-chart-pie"></i> Financial Report</a></li>
-      <li><a href="revenueReport.php" class="active"><i class="fas fa-chart-line"></i> Revenue Report</a></li>
+      <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+      <li><a href="income.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+      <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+      <li><a href="financialReport.php" class="active"><i class="fas fa-chart-pie"></i> Financial Report</a></li>
     </ul>
     <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
   </aside>
 
   <main class="main-content" id="reportContent">
-    <h1>💰 Revenue Report</h1>
+    <h1>📊 Financial Overview</h1>
 
-    <!-- Summary Section -->
+    <!-- Summary Cards -->
     <div class="summary">
-      <div class="summary-card" style="border-left:5px solid #007bff;">
-        <h3>Total Sales</h3>
-        <p>LKR <?= number_format($totalSales, 2) ?></p>
-      </div>
       <div class="summary-card" style="border-left:5px solid #28a745;">
         <h3>Total Income</h3>
         <p>LKR <?= number_format($totalIncome, 2) ?></p>
+      </div>
+      <div class="summary-card" style="border-left:5px solid #007bff;">
+        <h3>Total Sales</h3>
+        <p>LKR <?= number_format($totalSales, 2) ?></p>
       </div>
       <div class="summary-card" style="border-left:5px solid #dc3545;">
         <h3>Total Costs</h3>
@@ -200,72 +199,79 @@ $conn->close();
       </div>
     </div>
 
-    <h2>📈 Monthly Revenue Trend</h2>
-    <canvas id="monthlyRevenueChart"></canvas>
+    <h2>📅 Monthly Report</h2>
+    <canvas id="monthlyChart"></canvas>
 
-    <h2>🏷️ Category-wise Revenue</h2>
-    <canvas id="categoryRevenueChart"></canvas>
+    <h2>📆 Annual Report</h2>
+    <canvas id="annualChart"></canvas>
 
-    <h2>📊 Revenue Composition</h2>
-    <canvas id="revenuePieChart"></canvas>
+    <h2>💰 Financial Distribution</h2>
+    <canvas id="financePieChart"></canvas>
 
     <button class="pdf-btn" onclick="downloadPDF()">📥 Download PDF Report</button>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
   <script>
-    // Monthly Revenue Trend
-    new Chart(document.getElementById('monthlyRevenueChart'), {
-      type: 'line',
-      data: {
-        labels: <?= json_encode($months) ?>,
-        datasets: [{
-          label: 'Revenue (LKR)',
-          data: <?= json_encode($monthlyRevenue) ?>,
-          borderColor: '#28a745',
-          backgroundColor: 'rgba(40,167,69,0.2)',
-          fill: true
-        }]
-      },
-      options: {
-        plugins: { title: { display: true, text: 'Monthly Revenue Performance' } },
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-    // Category Revenue Chart
-    new Chart(document.getElementById('categoryRevenueChart'), {
+    // ========================
+    // Monthly Chart
+    // ========================
+    new Chart(document.getElementById('monthlyChart'), {
       type: 'bar',
       data: {
-        labels: <?= json_encode($categories) ?>,
-        datasets: [{
-          label: 'Revenue (LKR)',
-          data: <?= json_encode($categoryRevenue) ?>,
-          backgroundColor: '#007bff'
-        }]
+        labels: <?= json_encode($months) ?>,
+        datasets: [
+          { label: 'Income', data: <?= json_encode($monthlyIncome) ?>, backgroundColor: '#28a745' },
+          { label: 'Sales', data: <?= json_encode($monthlySales) ?>, backgroundColor: '#007bff' },
+          { label: 'Costs', data: <?= json_encode($monthlyCost) ?>, backgroundColor: '#dc3545' }
+        ]
       },
       options: {
-        plugins: { title: { display: true, text: 'Revenue by Category' } },
+        responsive: true,
+        plugins: { title: { display: true, text: 'Monthly Financial Overview' } },
         scales: { y: { beginAtZero: true } }
       }
     });
 
-    // Revenue Pie Chart
-    new Chart(document.getElementById('revenuePieChart'), {
-      type: 'pie',
+    // ========================
+    // Annual Chart
+    // ========================
+    new Chart(document.getElementById('annualChart'), {
+      type: 'line',
       data: {
-        labels: ['Sales', 'Income', 'Costs'],
-        datasets: [{
-          data: [<?= $totalSales ?>, <?= $totalIncome ?>, <?= $totalCost ?>],
-          backgroundColor: ['#007bff', '#28a745', '#dc3545']
-        }]
+        labels: <?= json_encode($years) ?>,
+        datasets: [
+          { label: 'Income', data: <?= json_encode($annualIncome) ?>, borderColor: '#28a745', fill: false },
+          { label: 'Sales', data: <?= json_encode($annualSales) ?>, borderColor: '#007bff', fill: false },
+          { label: 'Costs', data: <?= json_encode($annualCost) ?>, borderColor: '#dc3545', fill: false }
+        ]
       },
       options: {
-        plugins: { title: { display: true, text: 'Revenue Composition Overview' } }
+        responsive: true,
+        plugins: { title: { display: true, text: 'Annual Financial Performance' } },
+        scales: { y: { beginAtZero: true } }
       }
     });
 
+    // ========================
+    // Pie Chart
+    // ========================
+    new Chart(document.getElementById('financePieChart'), {
+      type: 'pie',
+      data: {
+        labels: ['Income', 'Sales', 'Costs'],
+        datasets: [{
+          data: [<?= $totalIncome ?>, <?= $totalSales ?>, <?= $totalCost ?>],
+          backgroundColor: ['#28a745', '#007bff', '#dc3545']
+        }]
+      },
+      options: {
+        plugins: { title: { display: true, text: 'Overall Financial Distribution' } }
+      }
+    });
+
+    // ========================
     // PDF Export
+    // ========================
     function downloadPDF() {
       html2canvas(document.querySelector("#reportContent")).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
@@ -283,7 +289,7 @@ $conn->close();
           pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
-        pdf.save('Revenue_Report.pdf');
+        pdf.save('Financial_Report.pdf');
       });
     }
   </script>

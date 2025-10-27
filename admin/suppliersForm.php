@@ -3,46 +3,45 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "final_project"; // Change this to your actual database name
+$dbname = "final_project";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check if the connection is successful
+// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
+$message = "";
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $supplierName = trim($_POST['supplierName']);
     $supplierEmail = trim($_POST['supplierEmail']);
     $supplierPhone = trim($_POST['supplierPhone']);
+    $productCategory = trim($_POST['productCategory']);
     $productSupplied = trim($_POST['productSupplied']);
     $productQuantity = !empty($_POST['productQuantity']) ? intval($_POST['productQuantity']) : 0;
 
-    // Validate input
+    // Validation
     if (empty($supplierName) || empty($supplierEmail) || empty($supplierPhone) || empty($productSupplied)) {
-        echo "<p style='color:red;'>All fields are required!</p>";
+        $message = "⚠️ All fields are required!";
     } else {
-        // Prepare and bind SQL statement (now includes productQuantity)
+        // Insert supplier record
         $stmt = $conn->prepare("INSERT INTO suppliers (supplierName, supplierEmail, supplierPhone, productSupplied, productQuantity) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssi", $supplierName, $supplierEmail, $supplierPhone, $productSupplied, $productQuantity);
 
-        // Execute the query
         if ($stmt->execute()) {
-            // Redirect back to suppliers.php
             header("Location: suppliers.php");
             exit();
         } else {
-            echo "<p style='color:red;'>Error: " . htmlspecialchars($stmt->error) . "</p>";
+            $message = "Error: " . $stmt->error;
         }
 
-        // Close statement
         $stmt->close();
     }
 }
 
-// Close the connection
 $conn->close();
 ?>
 
@@ -71,8 +70,6 @@ $conn->close();
         <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
@@ -119,20 +116,47 @@ $conn->close();
         </div>
 
         <div class="form-group">
-          <label for="productSupplied">Products Supplied</label>
-          <textarea id="productSupplied" name="productSupplied" required></textarea>
+          <label for="productCategory">Product Category</label>
+          <select id="productCategory" name="productCategory" required>
+            <option value="">-- Select Category --</option>
+            <optgroup label="📺 Electronics">
+              <option value="Televisions">Televisions</option>
+              <option value="Laptops">Laptops</option>
+              <option value="Mobile Phones">Mobile Phones</option>
+              <option value="Refrigerators">Refrigerators</option>
+              <option value="Washing Machines">Washing Machines</option>
+              <option value="Microwaves">Microwaves</option>
+              <option value="Speakers">Speakers</option>
+              <option value="Headphones">Headphones</option>
+              <option value="Cameras">Cameras</option>
+            </optgroup>
+            <optgroup label="🪑 Furniture">
+              <option value="Sofas">Sofas</option>
+              <option value="Beds">Beds</option>
+              <option value="Dining Tables">Dining Tables</option>
+              <option value="Chairs">Chairs</option>
+              <option value="Cabinets">Cabinets</option>
+              <option value="Wardrobes">Wardrobes</option>
+              <option value="Office Desks">Office Desks</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="productSupplied">Specific Product</label>
+          <input type="text" id="productSupplied" name="productSupplied" placeholder="e.g. ASUS TUF Laptop" required>
         </div>
 
         <div class="form-group">
           <label for="productQuantity">Product Quantity</label>
-          <input type="number" id="productQuantity" name="productQuantity" min="0" value="0" required>
+          <input type="number" id="productQuantity" name="productQuantity" min="1" required>
         </div>
 
         <div class="form-group">
           <button type="submit">Add Supplier</button>
         </div>
 
-        <p class="error-message" id="formErrorMessage"></p>
+        <p class="error-message"><?php echo $message; ?></p>
       </form>
     </main>
   </div>

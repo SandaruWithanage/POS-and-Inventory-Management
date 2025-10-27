@@ -97,22 +97,20 @@ $conn->close();
 </head>
 <body>
 <aside class="sidebar">
-      <ul>
-        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-        <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-        <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="budget.php" class="active"><i class="fas fa-coins"></i> Budget</a></li>
-        <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
-        <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
-        <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-        <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
-        <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
-      </ul>
-     <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
-    </aside>
+           <ul>
+                <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="inventory.php" class="active"><i class="fas fa-boxes"></i> Inventory</a></li>
+                <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
+                <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+                <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+                <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+                <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
+                <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
+                <li><a href="reports.php"><i class="fas fa-file-alt"></i> Reports</a></li>
+            </ul>
+            <a href="admin/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
+        </aside>
 
 <main class="content">
     <h1 style="text-align: center;">Reports Dashboard</h1>

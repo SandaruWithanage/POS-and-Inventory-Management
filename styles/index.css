@@ -1,7 +1,6 @@
 /* ===================================================
    GLOBAL STYLING — dark, modern glowing design
    =================================================== */
-
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -13,12 +12,18 @@ body {
     height: 100vh;
     overflow: hidden;
     color: #fff;
+    animation: fadeInBody 1s ease-in;
+}
+
+/* Subtle fade-in animation for entire page */
+@keyframes fadeInBody {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 /* ===================================================
    LOGIN CONTAINER
    =================================================== */
-
 .login-container {
     width: 100%;
     display: flex;
@@ -34,6 +39,7 @@ body {
     padding: 40px;
     text-align: center;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+    animation: slideUp 0.8s ease-out;
 }
 
 .login-box:hover {
@@ -41,32 +47,56 @@ body {
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
 }
 
+/* Smooth slide-up animation for login box */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Logo subtle glowing pulse */
 .logo img {
     width: 90px;
     border-radius: 10px;
     margin-bottom: 15px;
     box-shadow: 0 0 8px rgba(0, 188, 212, 0.5);
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 8px rgba(0,188,212,0.4); transform: scale(1); }
+    50% { box-shadow: 0 0 20px rgba(0,188,212,0.8); transform: scale(1.03); }
+    100% { box-shadow: 0 0 8px rgba(0,188,212,0.4); transform: scale(1); }
 }
 
 /* ===================================================
    TEXT & HEADINGS
    =================================================== */
-
 h2 {
     color: #00bcd4;
     margin-bottom: 20px;
     font-size: 26px;
     font-weight: 600;
     letter-spacing: 1px;
+    animation: fadeInText 1s ease-in;
+}
+
+@keyframes fadeInText {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===================================================
    INPUT FIELDS
    =================================================== */
-
 .input-group {
     margin-bottom: 20px;
     text-align: left;
+    animation: fadeInInputs 1.2s ease-in;
+}
+
+@keyframes fadeInInputs {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .input-group label {
@@ -101,7 +131,6 @@ h2 {
 /* ===================================================
    BUTTON STYLING
    =================================================== */
-
 button, .btn {
     width: 100%;
     padding: 12px;
@@ -113,6 +142,12 @@ button, .btn {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    animation: fadeInButton 1.4s ease;
+}
+
+@keyframes fadeInButton {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 button:hover, .btn:hover {
@@ -128,19 +163,23 @@ button:active, .btn:active {
 /* ===================================================
    ERROR & MESSAGE STYLING
    =================================================== */
-
 .error-message {
     color: #ff5252;
     font-size: 14px;
     margin-top: 10px;
     font-weight: 500;
     text-shadow: 0 0 5px rgba(255,82,82,0.4);
+    animation: fadeInError 0.5s ease;
+}
+
+@keyframes fadeInError {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 /* ===================================================
-   ANIMATIONS (optional subtle pulse)
+   ANIMATIONS (subtle pulse for button hover)
    =================================================== */
-
 @keyframes glow {
     0% { box-shadow: 0 0 10px rgba(0,188,212,0.2); }
     50% { box-shadow: 0 0 20px rgba(0,188,212,0.6); }
@@ -154,7 +193,6 @@ button:hover {
 /* ===================================================
    MOBILE RESPONSIVENESS
    =================================================== */
-
 @media (max-width: 480px) {
     .login-box {
         width: 90%;
@@ -163,4 +201,14 @@ button:hover {
     h2 {
         font-size: 22px;
     }
+}
+/* ===================================================
+   PAGE TRANSITION (Fade Out)
+   =================================================== */
+body {
+    transition: opacity 0.6s ease;
+}
+
+body.fade-out {
+    opacity: 0;
 }
