@@ -33,22 +33,23 @@ if (isset($_GET['id'])) {
 
 // Update supplier functionality
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $supplierName = $_POST['supplierName'];
-    $supplierEmail = $_POST['supplierEmail'];
-    $supplierPhone = $_POST['supplierPhone'];
-    $productSupplied = $_POST['productSupplied'];
+    $supplierName = trim($_POST['supplierName']);
+    $supplierEmail = trim($_POST['supplierEmail']);
+    $supplierPhone = trim($_POST['supplierPhone']);
+    $productSupplied = trim($_POST['productSupplied']);
+    $productQuantity = !empty($_POST['productQuantity']) ? intval($_POST['productQuantity']) : 0;
 
     // Validate input
     if (empty($supplierName) || empty($supplierEmail) || empty($supplierPhone) || empty($productSupplied)) {
         echo "<p style='color:red;'>All fields are required!</p>";
     } else {
-        // Update the supplier record in the database
-        $stmt = $conn->prepare("UPDATE suppliers SET supplierName = ?, supplierEmail = ?, supplierPhone = ?, productSupplied = ? WHERE id = ?");
-        $stmt->bind_param("ssssi", $supplierName, $supplierEmail, $supplierPhone, $productSupplied, $supplierId);
+        // Update the supplier record in the database (including productQuantity)
+        $stmt = $conn->prepare("UPDATE suppliers SET supplierName = ?, supplierEmail = ?, supplierPhone = ?, productSupplied = ?, productQuantity = ? WHERE id = ?");
+        $stmt->bind_param("ssssii", $supplierName, $supplierEmail, $supplierPhone, $productSupplied, $productQuantity, $supplierId);
 
         if ($stmt->execute()) {
-            // Redirect to supplier.php after successful update
-            header("Location: supplier.php");
+            // Redirect to suppliers.php after successful update
+            header("Location: suppliers.php");
             exit;
         } else {
             echo "<p style='color:red;'>Error: Could not update supplier record.</p>";
@@ -71,8 +72,6 @@ $conn->close();
   <link rel="stylesheet" href="../styles/sidebar.css">
   <link rel="stylesheet" href="../styles/topbar.css">
   <link rel="stylesheet" href="../styles/supplier.css">
-
-  <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -80,18 +79,18 @@ $conn->close();
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-        <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
-        <li><a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="budget.html"><i class="fas fa-coins"></i>Budget</a></li>
-        <li><a href="costs.html"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
-        <li><a href="income-costs.html"><i class="fas fa-file-invoice-dollar"></i> Income </a></li>
-        <li><a href="sales.html"><i class="fas fa-chart-line"></i> Sales</a></li>
-        <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-        <li><a href="customers.html"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="shipment.html"><i class="fas fa-shipping-fast"></i> Shipment </a></li>
-        <li><a href="purchase.html"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
-        <li><a href="roles.html"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
+        <li><a href="suppliers.php" class="active"><i class="fas fa-truck"></i> Suppliers</a></li>
+        <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
+        <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
+        <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
+        <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
+        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
+        <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
+        <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
+        <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
       </ul>
       <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
@@ -143,6 +142,11 @@ $conn->close();
         </div>
 
         <div class="form-group">
+          <label for="productQuantity">Product Quantity</label>
+          <input type="number" id="productQuantity" name="productQuantity" min="0" value="<?php echo htmlspecialchars($supplier['productQuantity']); ?>" required>
+        </div>
+
+        <div class="form-group">
           <button type="submit">Save Changes</button>
         </div>
 
@@ -152,3 +156,4 @@ $conn->close();
   </div>
 </body>
 </html>
+i

@@ -19,8 +19,13 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
 $search = isset($_GET['search']) ? $_GET['search'] : ''; // Search term
 $offset = ($page - 1) * $itemsPerPage;
 
-// Fetch inventory data with pagination
-$sql = "SELECT * FROM inventory WHERE product_name LIKE :searchTerm ORDER BY id ASC LIMIT :offset, :itemsPerPage";
+// ✅ UPDATED QUERY: only show inventory that has a valid supplier
+$sql = "SELECT inventory.*, suppliers.supplierName 
+        FROM inventory 
+        INNER JOIN suppliers ON inventory.supplier_id = suppliers.id
+        WHERE inventory.product_name LIKE :searchTerm 
+        ORDER BY inventory.id ASC 
+        LIMIT :offset, :itemsPerPage";
 $stmt = $conn->prepare($sql);
 $searchTerm = "%" . $search . "%";
 $stmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
@@ -29,8 +34,11 @@ $stmt->bindParam(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
 $stmt->execute();
 $inventoryData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch total number of records for pagination
-$totalSql = "SELECT COUNT(*) as total FROM inventory WHERE product_name LIKE :searchTerm";
+// ✅ UPDATED: count only items that have valid suppliers
+$totalSql = "SELECT COUNT(*) as total 
+             FROM inventory 
+             INNER JOIN suppliers ON inventory.supplier_id = suppliers.id
+             WHERE inventory.product_name LIKE :searchTerm";
 $totalStmt = $conn->prepare($totalSql);
 $totalStmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
 $totalStmt->execute();
@@ -67,7 +75,7 @@ if (isset($_GET['delete_id'])) {
     exit();
 }
 
-// Renumber the inventory IDs after deletion
+// Return JSON when requested
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch_inventory'])) {
     echo json_encode([
         'data' => $inventoryData,
@@ -99,17 +107,15 @@ $conn = null;
                 <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
                 <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
-                <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
                 <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
                 <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
                 <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
                 <li><a href="orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
                 <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
-                <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-                <li><a href="purchase.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
                 <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
+                <li><a href="reports.php"><i class="fas fa-file-alt"></i> Reports</a></li>
             </ul>
-            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+             <a href="admin/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
         </aside>
 
         <!-- Main Content -->
@@ -143,18 +149,20 @@ $conn = null;
             <!-- Inventory Table -->
             <table id="inventoryTable">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Product Name</th>
-                        <th>Barcode No:</th>
-                        <th>Category</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Selling Price</th>
-                        <th>Total Value</th>
-                        <th>Actions</th>
-                    </tr>
+                       <tr>
+                            <th>ID</th>
+                            <th>Supplier</th>
+                            <th>Category</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Selling Price</th>
+                            <th>Total Value</th>
+                            <th>Actions</th>
+                     </tr>
+
                 </thead>
+
                 <tbody>
                     <!-- Dynamic inventory data will be inserted here -->
                 </tbody>
@@ -184,25 +192,21 @@ $conn = null;
                         
                         data.data.forEach(item => {
                             const row = document.createElement('tr');
-                            row.innerHTML = ` 
+                            row.innerHTML = `
                                 <td>${item.id}</td>
-                                <td>${item.product_name}</td>
-                                <td>${item.barcode_no}</td>
+                                <td>${item.supplierName || 'N/A'}</td>
                                 <td>${item.category}</td>
+                                <td>${item.product_name}</td>
                                 <td>${item.quantity}</td>
                                 <td>${item.unit_price}</td>
                                 <td>${item.selling_price}</td>
                                 <td>${(item.quantity * item.selling_price).toFixed(2)}</td>
                                 <td>
-                                    <a href="edit-inventory.php?id=${item.id}">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    |
-                                    <a href="inventory.php?delete_id=${item.id}">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
+                                    <a href="edit-inventory.php?id=${item.id}"><i class="fas fa-edit"></i></a> |
+                                    <a href="inventory.php?delete_id=${item.id}"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             `;
+
                             tableBody.appendChild(row);
                         });
 

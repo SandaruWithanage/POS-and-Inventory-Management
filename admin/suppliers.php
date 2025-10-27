@@ -1,9 +1,9 @@
 <?php
 // Database connection
 $servername = "localhost";
-$username = "root";  // Change this to your database username
-$password = "";      // Change this to your database password
-$dbname = "final_project";  // Replace with your actual database name
+$username = "root";  // Database username
+$password = "";      // Database password
+$dbname = "final_project";  // Database name
 
 try {
     // Create PDO connection
@@ -15,12 +15,12 @@ try {
 }
 
 // Pagination setup
-$records_per_page = 10; // Number of records to display per page
-$page = isset($_GET['page']) ? $_GET['page'] : 1; // Current page
+$records_per_page = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $records_per_page;
 
-// Fetch data from the 'suppliers' table with pagination
-$stmt = $pdo->prepare("SELECT * FROM suppliers ORDER BY id LIMIT :offset, :records_per_page");
+// Fetch data from 'suppliers' table
+$stmt = $pdo->prepare("SELECT * FROM suppliers ORDER BY id ASC LIMIT :offset, :records_per_page");
 $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->bindParam(':records_per_page', $records_per_page, PDO::PARAM_INT);
 $stmt->execute();
@@ -33,23 +33,19 @@ $total_pages = ceil($total_records / $records_per_page);
 
 // Delete record functionality
 if (isset($_GET['delete_id'])) {
-    $delete_id = $_GET['delete_id'];
+    $delete_id = (int)$_GET['delete_id'];
 
-    // Prepare the delete statement
     $stmt = $pdo->prepare("DELETE FROM suppliers WHERE id = :id");
     $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
     $stmt->execute();
 
-    // Reassign IDs to ensure continuous numbering and reset AUTO_INCREMENT
+    // Reassign IDs to ensure continuous numbering
     $pdo->query("SET @i := 0");
-    $pdo->query("UPDATE suppliers SET id = @i := (@i + 1)");
-
-    // Reset AUTO_INCREMENT to avoid skipping IDs
+    $pdo->query("UPDATE suppliers SET id = (@i := @i + 1)");
     $pdo->query("ALTER TABLE suppliers AUTO_INCREMENT = 1");
 
-    // Redirect back to the page after deletion and ID update
     header("Location: suppliers.php");
-    exit; // Make sure the script stops after the redirect
+    exit;
 }
 ?>
 
@@ -69,20 +65,18 @@ if (isset($_GET['delete_id'])) {
     <!-- Sidebar -->
     <aside class="sidebar">
       <ul>
-      <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="../dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="inventory.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-        <li><a href="suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
-        <li><a href="budget.php"><i class="fas fa-coins"></i> Budget</a></li>
+        <li><a href="suppliers.php" class="active"><i class="fas fa-truck"></i> Suppliers</a></li>
         <li><a href="costs.php"><i class="fas fa-money-bill-wave"></i> Costs</a></li>
         <li><a href="income-costs.php"><i class="fas fa-file-invoice-dollar"></i> Income</a></li>
         <li><a href="sales.php"><i class="fas fa-chart-line"></i> Sales</a></li>
         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
         <li><a href="customers.php"><i class="fas fa-users"></i> Customer Management</a></li>
-        <li><a href="shipment.php"><i class="fas fa-shipping-fast"></i> Shipment</a></li>
-        <li><a href="ppurchaseurches.php"><i class="fas fa-money-bill-wave"></i> Purchase</a></li>
         <li><a href="roles.php"><i class="fas fa-user-cog"></i> Role Management</a></li>
+        <li><a href="reports.php"><i class="fas fa-file-alt"></i> Reports</a></li>
       </ul>
-      <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</button>
+      <a href="admin/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log out</a>
     </aside>
 
     <!-- Main Content -->
@@ -123,6 +117,7 @@ if (isset($_GET['delete_id'])) {
             <th>Email</th>
             <th>Phone</th>
             <th>Product Supplied</th>
+            <th>Product Quantity</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -134,9 +129,16 @@ if (isset($_GET['delete_id'])) {
               <td><?php echo htmlspecialchars($supplier['supplierEmail']); ?></td>
               <td><?php echo htmlspecialchars($supplier['supplierPhone']); ?></td>
               <td><?php echo htmlspecialchars($supplier['productSupplied']); ?></td>
+              <td><?php echo htmlspecialchars($supplier['productQuantity']); ?></td>
               <td>
-                <a href="editSupplier.php?id=<?php echo $supplier['id']; ?>" class="edit-btn"><i class="fas fa-edit"></i></a>
-                <a href="suppliers.php?delete_id=<?php echo urlencode($supplier['id']); ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this record?');"><i class="fas fa-trash-alt"></i></a>
+                <a href="editSupplier.php?id=<?php echo $supplier['id']; ?>" class="edit-btn">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="suppliers.php?delete_id=<?php echo urlencode($supplier['id']); ?>" 
+                   class="delete-btn" 
+                   onclick="return confirm('Are you sure you want to delete this record?');">
+                   <i class="fas fa-trash-alt"></i>
+                </a>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -161,6 +163,5 @@ if (isset($_GET['delete_id'])) {
       </div>
     </main>
   </div>
-
 </body>
 </html>
